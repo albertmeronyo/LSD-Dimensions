@@ -1,0 +1,21 @@
+PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+SELECT DISTINCT ?dimensionu ?dimension ?code ?codelabel
+WHERE {
+{ GRAPH <http://lod.cedar-project.nl/resource/harmonization> {
+    ?dimensionu a qb:DimensionProperty ;
+    rdfs:label ?dimension .
+    OPTIONAL {?dimensionu qb:codeList ?codelist .
+    ?codelist skos:hasTopConcept ?code .
+    ?code skos:prefLabel ?codelabel }
+}}
+UNION
+{ SERVICE <http://worldbank.270a.info/sparql> {
+    ?dimensionu a qb:DimensionProperty ;
+    rdfs:label ?dimension .
+    OPTIONAL {?dimensionu qb:codeList ?codelist .
+    ?codelist skos:hasTopConcept ?code .
+    ?code skos:prefLabel ?codelabel }
+}}
+} GROUP BY ?dimensionu ?dimension ORDER BY ?dimension
