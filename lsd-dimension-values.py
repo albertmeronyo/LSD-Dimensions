@@ -6,18 +6,9 @@ import urllib2
 import json
 from simplejson import JSONDecodeError
 import socket
+from timeout import timeout, TimeoutError
 
-# Query SPARQL endpoints to Datahub
-datahub_api_call = "http://datahub.io/api/2/search/resource?format=api/sparql&all_fields=1&limit=1000"
-datahub_stream = urllib2.urlopen(datahub_api_call)
-datahub_json = json.load(datahub_stream)
-datahub_results = datahub_json["results"]
-
-# Query endpoints for variables and values
-for endpoint in datahub_results:
-    print 'ENDPOINT: ' + endpoint["url"]
-    sparql = SPARQLWrapper(endpoint["url"])
-    sparql.setQuery("""
+query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX qb: <http://purl.org/linked-data/cube#>
@@ -30,10 +21,17 @@ for endpoint in datahub_results:
     ?codelist skos:hasTopConcept ?codeu .
     ?codeu skos:prefLabel ?code . }
     } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
-    """)
-    sparql.setReturnFormat(JSON)
+"""
+
+@timeout(60)
+def query_endpoint(endpoint_url, query):
+    endpoint_results = None
+    print 'ENDPOINT: ' + endpoint_url
+    wrapper = SPARQLWrapper(endpoint_url)
+    wrapper.setQuery(query)
+    wrapper.setReturnFormat(JSON)
     try:
-        endpoint_results = sparql.query().convert()
+        endpoint_results = wrapper.query().convert()
     except urllib2.URLError:
         print "The endpoint URL could not be opened"
         pass
@@ -52,7 +50,21 @@ for endpoint in datahub_results:
     except socket.error:
         print "Connection reset by peer"
         pass        
+    return endpoint_results
 
+# Query SPARQL endpoints to Datahub
+datahub_api_call = "http://datahub.io/api/2/search/resource?format=api/sparql&all_fields=1&limit=1000"
+datahub_stream = urllib2.urlopen(datahub_api_call)
+datahub_json = json.load(datahub_stream)
+datahub_results = datahub_json["results"]
+
+# Query endpoints for variables and values
+for endpoint in datahub_results:
+    try:
+        endpoint_results = query_endpoint(endpoint["url"], query)
+    except TimeoutError:
+        print "Endpoint timeout"
+        pass
     try:
         for result in endpoint_results["results"]["bindings"]:
             if 'dimensionu' in result:
@@ -63,9 +75,13 @@ for endpoint in datahub_results:
                 print 'CODE URI: ' + result["codeu"]["value"]
             if 'code' in result:
                 print 'CODE LABEL: ' + result["code"]["value"]
-    except (AttributeError) as e:
+    except AttributeError:
         print "The endpoint did not return JSON"
-        continue
+        pass
+    except TypeError:
+        print "The endpoint did not return valid JSON"
+        pass
+        
 
 # Serialize list to JSON
 # endpoints_file = open('endpoints.json', 'w')
