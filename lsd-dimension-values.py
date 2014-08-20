@@ -92,6 +92,9 @@ for endpoint in datahub_results:
     except TypeError:
         print "The endpoint did not return valid JSON"
         pass
+    except KeyError:
+        print "The endpoint returned an empty response"
+        pass
     current_endpoint += 1
         
 
