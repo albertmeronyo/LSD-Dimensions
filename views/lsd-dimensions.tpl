@@ -11,7 +11,7 @@
   %   ncodes = int(result["ncodes"]["value"])
   <tr {{"class=success" if ncodes > 0 else "class=danger"}}>
     <td>
-      <form name="edit{{dimension}}" action="/harmonize/vocab/detail" method="post">
+      <form name="edit{{dimension}}" action="/dimension" method="post">
 	<input type="hidden" name="dim" value="{{dimension}}">
       <a href="javascript:document.forms['edit{{dimension}}'].submit();">{{dimension}}</a>
       </form>

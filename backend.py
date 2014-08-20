@@ -36,6 +36,35 @@ def lsd_dimensions():
     results = sparql.query().convert()
     return template('lsd-dimensions', results=results)
 
+@route('/dimension', method = 'POST')
+def vocab_detail(__dim = None):
+    dim = None
+    if __dim:
+        dim = __dim
+    else:
+        dim = request.forms.get("dim")
+    print dim
+    sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
+    det_dimension = """
+    PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX qb: <http://purl.org/linked-data/cube#>
+    SELECT DISTINCT ?code ?codel ?codelist ?concept
+    FROM <http://lod.cedar-project.nl/resource/harmonization>
+    WHERE {
+    <%s> a qb:DimensionProperty ;
+    qb:concept ?concept ;
+    rdfs:range ?range .
+    OPTIONAL {<%s> qb:codeList ?codelist .
+    ?codelist skos:hasTopConcept ?code .
+    ?code skos:prefLabel ?codel . }
+    }
+    """ % (dim, dim)
+    sparql.setQuery(det_dimension)
+    sparql.setReturnFormat(JSON)
+    details = sparql.query().convert()
+    return template('dimension-detail', dim=dim, details=details)
+
 # Static Routes
 @route('/js/<filename:re:.*\.js>')
 def javascripts(filename):
