@@ -95,6 +95,9 @@ for endpoint in datahub_results:
     except KeyError:
         print "The endpoint returned an empty response"
         pass
+    except UnicodeEncodeError:
+        print "TODO: SAVE THIS UTF-8 GUY!"
+        pass
     current_endpoint += 1
         
 
