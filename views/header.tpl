@@ -30,13 +30,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/harmonize">LSD Dimensions</a>
+          <a class="navbar-brand" href="/">LSD Dimensions</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="/harmonize">Home</a></li>
             <li><a href="https://github.com/albertmeronyo/lsd-dimensions" target="_blank">GitHub</a></li>
-            <li><a href="albert.meronyo@gmail.com">Contact</a></li>
+            <li><a href="mailto:albert.meronyo@gmail.com">Contact</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -46,10 +46,7 @@
 
       <div class="starter-template">
 
-	<a href="/">
-	<img align="center" src="/img/cedar_150x150.jpg">
-	</a>
 	<h1>LSD Dimensions</h1>
 	<p>LSD Dimensions is a crawler of all dimensions and codes
 	being used in Statistical Linked Data.</p>
-	<hr>
+

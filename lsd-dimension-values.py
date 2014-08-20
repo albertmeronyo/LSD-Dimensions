@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 from SPARQLWrapper import SPARQLWrapper, JSON
-from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, EndPointNotFound
+from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, EndPointNotFound, EndPointInternalError
 import urllib2
 import json
 from simplejson import JSONDecodeError
+import socket
 
 # Query SPARQL endpoints to Datahub
 datahub_api_call = "http://datahub.io/api/2/search/resource?format=api/sparql&all_fields=1&limit=1000"
@@ -38,6 +39,9 @@ for endpoint in datahub_results:
         pass
     except EndPointNotFound:
         print "Endpoint not found"
+        pass
+    except EndPointInternalError:
+        print "There was an internal error at the endpoint"
         pass
     except QueryBadFormed:
         print "The endpoint does not like the query"
