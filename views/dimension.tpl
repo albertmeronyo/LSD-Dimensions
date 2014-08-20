@@ -1,6 +1,4 @@
-% include('header.tpl', title='CEDAR Harmonize')
-
-<h2>Harmonization vocabulary</h2>
+% include('header.tpl', title='LSD Dimensions')
 
 <h3>Details for dimension {{dim}}</h3>
 <br>
@@ -48,7 +46,7 @@
 </div>
 </form>
 <br><br>
-<a href="/harmonize/vocab">Back</a>
+<a href="/">Back</a>
 
 
 

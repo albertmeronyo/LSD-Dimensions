@@ -48,5 +48,5 @@
 
 	<h1>LSD Dimensions</h1>
 	<p>LSD Dimensions is a crawler of all dimensions and codes
-	being used in Statistical Linked Data.</p>
+	currently used in Linked Statistical Data.</p>
 
