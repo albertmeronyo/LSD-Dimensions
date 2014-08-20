@@ -37,7 +37,7 @@ def lsd_dimensions():
     return template('lsd-dimensions', results=results)
 
 @route('/dimension', method = 'POST')
-def vocab_detail(__dim = None):
+def dimension(__dim = None):
     dim = None
     if __dim:
         dim = __dim
@@ -63,7 +63,7 @@ def vocab_detail(__dim = None):
     sparql.setQuery(det_dimension)
     sparql.setReturnFormat(JSON)
     details = sparql.query().convert()
-    return template('dimension-detail', dim=dim, details=details)
+    return template('dimension', dim=dim, details=details)
 
 # Static Routes
 @route('/js/<filename:re:.*\.js>')
