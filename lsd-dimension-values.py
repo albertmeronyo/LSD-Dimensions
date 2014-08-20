@@ -7,6 +7,7 @@ import json
 from simplejson import JSONDecodeError
 import socket
 from timeout import timeout, TimeoutError
+from xml.parsers.expat import ExpatError
 
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
@@ -49,7 +50,10 @@ def query_endpoint(endpoint_url, query):
         pass
     except socket.error:
         print "Connection reset by peer"
-        pass        
+        pass
+    except ExpatError:
+        print "The endpoint returned XML instead of JSON"
+        pass
     return endpoint_results
 
 # Query SPARQL endpoints to Datahub
@@ -65,15 +69,18 @@ for endpoint in datahub_results:
     except TimeoutError:
         print "Endpoint timeout"
         pass
+    except ValueError:
+        print "Endpoint and query combination are malformed"
+        pass
     try:
         for result in endpoint_results["results"]["bindings"]:
-            if 'dimensionu' in result:
+            if 'dimensionu' in result and 'value' in result['dimensionu']:
                 print 'DIMENSION URI: ' + result["dimensionu"]["value"]
-            if 'dimension' in result:
+            if 'dimension' in result and 'value' in result['dimension']:
                 print 'DIMENSION LABEL: ' + result["dimension"]["value"]
-            if 'codeu' in result:
+            if 'codeu' in result and 'value' in result['codeu']:
                 print 'CODE URI: ' + result["codeu"]["value"]
-            if 'code' in result:
+            if 'code' in result and 'value' in result['code']:
                 print 'CODE LABEL: ' + result["code"]["value"]
     except AttributeError:
         print "The endpoint did not return JSON"
