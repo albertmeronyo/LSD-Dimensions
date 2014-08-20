@@ -83,4 +83,4 @@ def fonts(filename):
     return static_file(filename, root='views/fonts')
 
 
-run(host = 'localhost', port = 8080, debug = True)
+run(host = sys.argv[0], port = sys.argv[1], debug = True)
