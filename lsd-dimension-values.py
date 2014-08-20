@@ -62,8 +62,12 @@ datahub_stream = urllib2.urlopen(datahub_api_call)
 datahub_json = json.load(datahub_stream)
 datahub_results = datahub_json["results"]
 
+num_endpoints = len(datahub_results)
+current_endpoint = 1
+
 # Query endpoints for variables and values
 for endpoint in datahub_results:
+    print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query)
     except TimeoutError:
@@ -88,6 +92,7 @@ for endpoint in datahub_results:
     except TypeError:
         print "The endpoint did not return valid JSON"
         pass
+    current_endpoint += 1
         
 
 # Serialize list to JSON
