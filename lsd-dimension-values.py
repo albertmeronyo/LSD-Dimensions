@@ -99,8 +99,8 @@ for endpoint in datahub_results:
                 if 'dimension' in result and 'value' in result['dimension']:
                     dimension_label = result["dimension"]["value"]
                     print 'DIMENSION LABEL: ' + dimension_label
-                    if not db['dimensions'].find({"uri" : dimension_uri, "endpoint_id" : endpoint_id}):
-                        dimension_id = db['dimensions'].save({"uri" : dimension_uri, "label" : dimension_label, "endpoint_id" : endpoint_id})
+                    #if db['dimensions'].find({"uri" : dimension_uri, "endpoint_id" : endpoint_id}).limit(1).size() == 0:
+                    dimension_id = db['dimensions'].save({"uri" : dimension_uri, "label" : dimension_label, "endpoint_id" : endpoint_id})
                 
                 if 'codeu' in result and 'value' in result['codeu']:
                     code_uri = result["codeu"]["value"]
@@ -108,8 +108,8 @@ for endpoint in datahub_results:
                     if 'code' in result and 'value' in result['code']:
                         code_label = result["code"]["value"]
                         print 'CODE LABEL: ' + code_label
-                        if not db['codes'].find({"uri" : code_uri, "dimension_id" : dimension_id}):
-                            code_id = db['codes'].save({"uri" : code_uri, "label" : code_label, "dimension_id" : dimension_id})
+                        #if db['codes'].find({"uri" : code_uri, "dimension_id" : dimension_id}).limit(1).size() == 0:
+                        code_id = db['codes'].save({"uri" : code_uri, "label" : code_label, "dimension_id" : dimension_id})
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
