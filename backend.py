@@ -1,4 +1,5 @@
 from bottle import route, run, template, request, static_file
+from pymongo import Connection
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 import urllib
 import logging
@@ -9,12 +10,16 @@ import os
 
 __VERSION = 0.1
 
+connection = Connection('localhost', 27017)
+db = connection.mydatabase
+
 @route('/version')
 def version():
     return "Version " + str(__VERSION)
 
 @route('/')
 def lsd_dimensions():
+    dims = db["dimensions"].find()
     sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
     dimensions = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
@@ -34,6 +39,7 @@ def lsd_dimensions():
     sparql.setQuery(dimensions)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
+    results = dims
     return template('lsd-dimensions', results=results)
 
 @route('/dimension', method = 'POST')
