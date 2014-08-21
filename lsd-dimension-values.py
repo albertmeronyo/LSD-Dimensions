@@ -8,6 +8,14 @@ from simplejson import JSONDecodeError
 import socket
 from timeout import timeout, TimeoutError
 from xml.parsers.expat import ExpatError
+from pymongo import Connection
+
+connection = Connection('localhost', 27017)
+db = connection.lsddimensions
+
+db['endpoints'].remove()
+db['dimensions'].remove()
+db['codes'].remove()
 
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
@@ -67,6 +75,9 @@ current_endpoint = 1
 
 # Query endpoints for variables and values
 for endpoint in datahub_results:
+    endpoint_id = None
+    dimension_id = None
+    code_id = None
     print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query)
@@ -77,15 +88,28 @@ for endpoint in datahub_results:
         print "Endpoint and query combination are malformed"
         pass
     try:
+        endpoint_id = db['endpoints'].save(endpoint)
+    except ValidationError as ve:
+        abort(400, str(ve))
+    try:
         for result in endpoint_results["results"]["bindings"]:
             if 'dimensionu' in result and 'value' in result['dimensionu']:
-                print 'DIMENSION URI: ' + result["dimensionu"]["value"]
-            if 'dimension' in result and 'value' in result['dimension']:
-                print 'DIMENSION LABEL: ' + result["dimension"]["value"]
-            if 'codeu' in result and 'value' in result['codeu']:
-                print 'CODE URI: ' + result["codeu"]["value"]
-            if 'code' in result and 'value' in result['code']:
-                print 'CODE LABEL: ' + result["code"]["value"]
+                dimension_uri = result["dimensionu"]["value"]
+                print 'DIMENSION URI: ' + dimension_uri
+                if 'dimension' in result and 'value' in result['dimension']:
+                    dimension_label = result["dimension"]["value"]
+                    print 'DIMENSION LABEL: ' + dimension_label
+                    if not db['dimensions'].find({"uri" : dimension_uri, "endpoint_id" : endpoint_id}):
+                        dimension_id = db['dimensions'].save({"uri" : dimension_uri, "label" : dimension_label, "endpoint_id" : endpoint_id})
+                
+                if 'codeu' in result and 'value' in result['codeu']:
+                    code_uri = result["codeu"]["value"]
+                    print 'CODE URI: ' + code_uri
+                    if 'code' in result and 'value' in result['code']:
+                        code_label = result["code"]["value"]
+                        print 'CODE LABEL: ' + code_label
+                        if not db['codes'].find({"uri" : code_uri, "dimension_id" : dimension_id}):
+                            code_id = db['codes'].save({"uri" : code_uri, "label" : code_label, "dimension_id" : dimension_id})
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
@@ -94,9 +118,6 @@ for endpoint in datahub_results:
         pass
     except KeyError:
         print "The endpoint returned an empty response"
-        pass
-    except UnicodeEncodeError:
-        print "TODO: SAVE THIS UTF-8 GUY!"
         pass
     current_endpoint += 1
         
