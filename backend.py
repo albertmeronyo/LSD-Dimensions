@@ -11,7 +11,7 @@ import os
 __VERSION = 0.1
 
 connection = Connection('localhost', 27017)
-db = connection.mydatabase
+db = connection.lsddimensions
 
 @route('/version')
 def version():
@@ -19,7 +19,7 @@ def version():
 
 @route('/')
 def lsd_dimensions():
-    dims = db["dimensions"].find()
+    dims = db["dimensions"].find().limit(100)
     sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
     dimensions = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>

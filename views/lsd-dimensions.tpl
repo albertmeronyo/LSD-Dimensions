@@ -4,12 +4,11 @@
 
 <center>
 <table class="table table-hover tablee-condensed">
-  <tr><td class="ui-helper-center"><b>Dimension</b></td><td class="ui-helper-center"><b>Description</b></td></tr>
-  %for result in results["results"]["bindings"]:
-  %   dimension = result["dimensionu"]["value"]
-  %   label = result["dimension"]["value"]
-  %   ncodes = int(result["ncodes"]["value"])
-  <tr {{"class=success" if ncodes > 0 else "class=danger"}}>
+  <tr><td class="ui-helper-center"><b>Dimension URI</b></td><td class="ui-helper-center"><b>Description</b></td></tr>
+  %for result in results:
+  %   dimension = result["uri"]
+  %   label = result["label"]
+  <tr>
     <td>
       <form name="edit{{dimension}}" action="/dimension" method="post">
 	<input type="hidden" name="dim" value="{{dimension}}">
