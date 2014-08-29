@@ -5,9 +5,9 @@
 <center>
 <table class="table table-hover tablee-condensed">
   <tr><td class="ui-helper-center"><b>Dimension URI</b></td><td class="ui-helper-center"><b>Description</b></td></tr>
-  %for result in results:
-  %   dimension = result["uri"]
-  %   label = result["label"]
+  %for result in results["result"]:
+  %   dimension = result["_id"]["uri"]
+  %   label = result["_id"]["label"]
   <tr>
     <td>
       <form name="edit{{dimension}}" action="/dimension" method="post">

@@ -19,26 +19,28 @@ def version():
 
 @route('/')
 def lsd_dimensions():
-    dims = db["dimensions"].find().limit(100)
-    sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
-    dimensions = """
-    PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX qb: <http://purl.org/linked-data/cube#>
-    SELECT DISTINCT ?dimensionu ?dimension (COUNT(?code) AS ?ncodes)
-    FROM <http://lod.cedar-project.nl/resource/harmonization>
-    WHERE {
-    ?dimensionu a qb:DimensionProperty ;
-    qb:concept ?concept ;
-    rdfs:label ?dimension ;
-    rdfs:range ?range .
-    OPTIONAL {?dimensionu qb:codeList ?codelist .
-    ?codelist skos:hasTopConcept ?code . }
-    } GROUP BY ?dimensionu ?dimension ORDER BY ?dimension
-    """
-    sparql.setQuery(dimensions)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
+    dims = db.dimensions.aggregate([
+        {"$group": {"_id": {"uri": "$uri", "label": "$label"}}}
+    ])
+    # sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
+    # dimensions = """
+    # PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
+    # PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    # PREFIX qb: <http://purl.org/linked-data/cube#>
+    # SELECT DISTINCT ?dimensionu ?dimension (COUNT(?code) AS ?ncodes)
+    # FROM <http://lod.cedar-project.nl/resource/harmonization>
+    # WHERE {
+    # ?dimensionu a qb:DimensionProperty ;
+    # qb:concept ?concept ;
+    # rdfs:label ?dimension ;
+    # rdfs:range ?range .
+    # OPTIONAL {?dimensionu qb:codeList ?codelist .
+    # ?codelist skos:hasTopConcept ?code . }
+    # } GROUP BY ?dimensionu ?dimension ORDER BY ?dimension
+    # """
+    # sparql.setQuery(dimensions)
+    # sparql.setReturnFormat(JSON)
+    # results = sparql.query().convert()
     results = dims
     return template('lsd-dimensions', results=results)
 
