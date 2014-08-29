@@ -21,7 +21,8 @@ def version():
 @route('/')
 def lsd_dimensions():
     dims = db.dimensions.aggregate([
-        {"$group": {"_id": {"uri": "$uri", "label": "$label"}}},
+        {"$unwind" : "$dimensions"},
+        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}}},
         {"$sort": SON([("label", -1), ("uri", -1)])}
     ])
     # sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")

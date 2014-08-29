@@ -13,9 +13,7 @@ from pymongo import Connection
 connection = Connection('localhost', 27017)
 db = connection.lsddimensions
 
-db['endpoints'].remove()
-db['dimensions'].remove()
-db['codes'].remove()
+db.dimensions.drop()
 
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
@@ -74,10 +72,8 @@ num_endpoints = len(datahub_results)
 current_endpoint = 1
 
 # Query endpoints for variables and values
+# datahub_results = [{"url" : "http://worldbank.270a.info/sparql"}]
 for endpoint in datahub_results:
-    endpoint_id = None
-    dimension_id = None
-    code_id = None
     print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query)
@@ -88,28 +84,32 @@ for endpoint in datahub_results:
         print "Endpoint and query combination are malformed"
         pass
     try:
-        endpoint_id = db['endpoints'].save(endpoint)
-    except ValidationError as ve:
-        abort(400, str(ve))
-    try:
+        dimensions = {}
+        dimensions_codes = {}
+        codes = {}
         for result in endpoint_results["results"]["bindings"]:
+            dimension_uri = None
+            dimension_label = None
+            code_uri = None
+            code_label = None
             if 'dimensionu' in result and 'value' in result['dimensionu']:
                 dimension_uri = result["dimensionu"]["value"]
                 print 'DIMENSION URI: ' + dimension_uri
                 if 'dimension' in result and 'value' in result['dimension']:
                     dimension_label = result["dimension"]["value"]
                     print 'DIMENSION LABEL: ' + dimension_label
-                    #if db['dimensions'].find({"uri" : dimension_uri, "endpoint_id" : endpoint_id}).limit(1).size() == 0:
-                    dimension_id = db['dimensions'].save({"uri" : dimension_uri, "label" : dimension_label, "endpoint_id" : endpoint_id})
-                
-                if 'codeu' in result and 'value' in result['codeu']:
-                    code_uri = result["codeu"]["value"]
-                    print 'CODE URI: ' + code_uri
-                    if 'code' in result and 'value' in result['code']:
-                        code_label = result["code"]["value"]
-                        print 'CODE LABEL: ' + code_label
-                        #if db['codes'].find({"uri" : code_uri, "dimension_id" : dimension_id}).limit(1).size() == 0:
-                        code_id = db['codes'].save({"uri" : code_uri, "label" : code_label, "dimension_id" : dimension_id})
+            if 'codeu' in result and 'value' in result['codeu']:
+                code_uri = result["codeu"]["value"]
+                print 'CODE URI: ' + code_uri
+                if 'code' in result and 'value' in result['code']:
+                    code_label = result["code"]["value"]
+                    print 'CODE LABEL: ' + code_label
+            dimensions[dimension_uri] = dimension_label
+            codes[code_uri] = code_label
+            if dimension_uri not in dimensions_codes:
+                dimensions_codes[dimension_uri] = [code_uri]
+            else:
+                dimensions_codes[dimension_uri].append(code_uri)
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
@@ -119,6 +119,24 @@ for endpoint in datahub_results:
     except KeyError:
         print "The endpoint returned an empty response"
         pass
+    document_entry = None
+    endpoint_entry = endpoint
+    dimensions_entry = []
+    for key, value in dimensions_codes.iteritems():
+        codes_entry = []
+        for code in value:
+            if code:
+                codes_entry.append({"uri" : code, "label" : codes[code]})
+        if codes_entry:
+            dimensions_entry.append({"uri" : key, "label" : dimensions[key], "codes" : codes_entry})
+        else:
+            dimensions_entry.append({"uri" : key, "label" : dimensions[key]})
+    document_entry = {
+        "endpoint" : endpoint_entry,
+        "dimensions" : dimensions_entry
+    }
+    db.dimensions.save(document_entry)
+    print document_entry
     current_endpoint += 1
         
 
