@@ -1,6 +1,7 @@
 from bottle import route, run, template, request, static_file
 from pymongo import Connection
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
+from bson.son import SON
 import urllib
 import logging
 import glob
@@ -20,7 +21,8 @@ def version():
 @route('/')
 def lsd_dimensions():
     dims = db.dimensions.aggregate([
-        {"$group": {"_id": {"uri": "$uri", "label": "$label"}}}
+        {"$group": {"_id": {"uri": "$uri", "label": "$label"}}},
+        {"$sort": SON([("label", -1), ("uri", -1)])}
     ])
     # sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
     # dimensions = """

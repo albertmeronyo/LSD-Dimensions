@@ -3,6 +3,8 @@
 <p>The following shows a list of the current dimensions (and their codes) in Linked Statistical Data. Lorem ipsum bla bla bla.</p>
 
 <center>
+%  num_dimensions = len(results["result"])
+<p>We currently have <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data. </p>
 <table class="table table-hover tablee-condensed">
   <tr><td class="ui-helper-center"><b>Dimension URI</b></td><td class="ui-helper-center"><b>Description</b></td></tr>
   %for result in results["result"]:
