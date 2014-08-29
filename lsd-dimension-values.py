@@ -119,7 +119,7 @@ for endpoint in datahub_results:
     except KeyError:
         print "The endpoint returned an empty response"
         pass
-    document_entry = None
+    document_entry = {}
     endpoint_entry = endpoint
     dimensions_entry = []
     for key, value in dimensions_codes.iteritems():
@@ -130,13 +130,12 @@ for endpoint in datahub_results:
         if codes_entry:
             dimensions_entry.append({"uri" : key, "label" : dimensions[key], "codes" : codes_entry})
         else:
-            dimensions_entry.append({"uri" : key, "label" : dimensions[key]})
-    document_entry = {
-        "endpoint" : endpoint_entry,
-        "dimensions" : dimensions_entry
-    }
+            if key and dimensions[key]:
+                dimensions_entry.append({"uri" : key, "label" : dimensions[key]})
+    document_entry["endpoint"] = endpoint_entry
+    if dimensions_entry:
+        document_entry["dimensions"] = dimensions_entry
     db.dimensions.save(document_entry)
-    print document_entry
     current_endpoint += 1
         
 
