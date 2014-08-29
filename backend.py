@@ -26,28 +26,7 @@ def lsd_dimensions():
                     "dimensionsCount" : {"$sum" : 1}}},
         {"$sort": SON([("dimensionsCount", -1)])}
     ])
-    # sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
-    # dimensions = """
-    # PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
-    # PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    # PREFIX qb: <http://purl.org/linked-data/cube#>
-    # SELECT DISTINCT ?dimensionu ?dimension (COUNT(?code) AS ?ncodes)
-    # FROM <http://lod.cedar-project.nl/resource/harmonization>
-    # WHERE {
-    # ?dimensionu a qb:DimensionProperty ;
-    # qb:concept ?concept ;
-    # rdfs:label ?dimension ;
-    # rdfs:range ?range .
-    # OPTIONAL {?dimensionu qb:codeList ?codelist .
-    # ?codelist skos:hasTopConcept ?code . }
-    # } GROUP BY ?dimensionu ?dimension ORDER BY ?dimension
-    # """
-    # sparql.setQuery(dimensions)
-    # sparql.setReturnFormat(JSON)
-    # results = sparql.query().convert()
-    results = dims
-    print results
-    return template('lsd-dimensions', results=results)
+    return template('lsd-dimensions', results=dims)
 
 @route('/dimension', method = 'POST')
 def dimension(__dim = None):
