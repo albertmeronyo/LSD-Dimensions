@@ -22,8 +22,9 @@ def version():
 def lsd_dimensions():
     dims = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"},
-        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}}},
-        {"$sort": SON([("label", -1), ("uri", -1)])}
+        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}, 
+                    "dimensionsCount" : {"$sum" : 1}}},
+        {"$sort": SON([("dimensionsCount", -1)])}
     ])
     # sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
     # dimensions = """
@@ -45,6 +46,7 @@ def lsd_dimensions():
     # sparql.setReturnFormat(JSON)
     # results = sparql.query().convert()
     results = dims
+    print results
     return template('lsd-dimensions', results=results)
 
 @route('/dimension', method = 'POST')
