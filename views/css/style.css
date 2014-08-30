@@ -1,0 +1,4 @@
+table tr td {
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}

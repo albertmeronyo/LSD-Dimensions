@@ -6,15 +6,20 @@
 <p style="margin-bottom: 50px">We currently have <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data. </p>
 
 
-<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true">
+<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true" data-row-style="rowStyle">
   <thead>
   <tr>
     <th data-field="uri" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;" >Dimension URI</th>
     <th data-field="label" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</th>
-    <th data-field="refs" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;">References</th>
+    <th data-field="refs" data-sortable="true" class="ui-helper-center col-md-2" style="background-color: #222; color: #aaa;">References</th>
   </tr>
   </thead>
 </table>
+<script>
+    function rowStyle(row) {
+        return 'overflow: hidden; text-overflow: ellipsis;';
+    }
+</script>
 </div>
 
 
