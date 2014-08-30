@@ -3,7 +3,7 @@
 <div class="container" style="margin: 20px auto;">
 <p>The following shows a list of the current dimensions (and their codes) in Linked Statistical Data. Lorem ipsum bla bla bla.</p>
 %  num_dimensions = len(results["result"])
-<p style="margin-bottom: 50px">We currently have <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data. </p>
+<p class="lead" style="margin-bottom: 50px">Counting <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data</p>
 
 
 <table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true">
