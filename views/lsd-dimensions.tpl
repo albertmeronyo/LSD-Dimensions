@@ -7,16 +7,20 @@
 
 
 <table class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left">
-  <tr><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Dimension URI</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</td></tr>
+  <tr><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Dimension URI</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">References</td></tr>
   %for result in results["result"]:
   %   dimension = result["_id"]["uri"]
   %   label = result["_id"]["label"]
+  %   refs = result["dimensionsCount"]
   <tr>
-    <td style="overflow: hidden; text-overflow: ellipsis">
+    <td style="overflow: hidden; text-overflow: ellipsis;">
       <a href="{{dimension}}" target="_blank">{{dimension}}</a>
     </td>
-    <td style="overflow: hidden; text-overflow: ellipsis">
+    <td style="overflow: hidden; text-overflow: ellipsis; text-align: center;">
       {{label}}
+    </td>
+    <td style="overflow: hidden; text-overflow: ellipsis; text-align: center;">
+      {{refs}}
     </td>
   </tr>
   %end
