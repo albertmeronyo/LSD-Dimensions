@@ -6,7 +6,7 @@
 <p class="lead" style="margin-bottom: 50px">Counting <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data</p>
 
 
-<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true">
+<table id="lsd-dimensions" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true" data-classes="table table-hover table-condensed table-striped">
   <thead>
   <tr>
     <th data-field="uri" data-sortable="true" class="ui-helper-center">Dimension URI</th>
