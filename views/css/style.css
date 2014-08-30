@@ -2,3 +2,11 @@ table tr td {
     overflow: hidden; 
     text-overflow: ellipsis;
 }
+
+table tr td:nth-child(2) {
+    text-align: center;
+}
+
+table tr td:nth-child(3) {
+    text-align: center;
+}
