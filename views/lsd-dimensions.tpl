@@ -6,25 +6,13 @@
 <p style="margin-bottom: 50px">We currently have <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data. </p>
 
 
-<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table">
+<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc">
   <thead>
-  <tr><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Dimension URI</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">References</td></tr>
-  %for result in results["result"]:
-  %   dimension = result["_id"]["uri"]
-  %   label = result["_id"]["label"]
-  %   refs = result["dimensionsCount"]
   <tr>
-    <td style="overflow: hidden; text-overflow: ellipsis;">
-      <a href="{{dimension}}" target="_blank">{{dimension}}</a>
-    </td>
-    <td style="overflow: hidden; text-overflow: ellipsis; text-align: center;">
-      {{label}}
-    </td>
-    <td style="overflow: hidden; text-overflow: ellipsis; text-align: center;">
-      {{refs}}
-    </td>
+    <th data-field="uri" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;" >Dimension URI</th>
+    <th data-field="label" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</th>
+    <th data-field="refs" data-sortable="true" class="ui-helper-center" style="background-color: #222; color: #aaa;">References</th>
   </tr>
-  %end
   </thead>
 </table>
 </div>

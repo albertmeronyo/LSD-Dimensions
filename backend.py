@@ -68,6 +68,10 @@ def dimension(__dim = None):
     return template('dimension', dim=dim, details=details)
 
 # Static Routes
+@route('/data.json')
+def data():
+    return static_file('data.json', root='./')
+
 @route('/js/<filename:re:.*\.js>')
 def javascripts(filename):
     return static_file(filename, root='views/js')
