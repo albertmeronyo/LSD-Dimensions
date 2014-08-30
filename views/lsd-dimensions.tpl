@@ -6,7 +6,8 @@
 <p style="margin-bottom: 50px">We currently have <b>{{num_dimensions}}</b> dimensions in Linked Statistical Data. </p>
 
 
-<table class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left">
+<table id="lsd-dimensions" class="table table-hover table-condensed table-striped" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table">
+  <thead>
   <tr><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Dimension URI</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">Label</td><td class="ui-helper-center" style="background-color: #222; color: #aaa;">References</td></tr>
   %for result in results["result"]:
   %   dimension = result["_id"]["uri"]
@@ -24,6 +25,7 @@
     </td>
   </tr>
   %end
+  </thead>
 </table>
 </div>
 

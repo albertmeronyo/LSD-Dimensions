@@ -8,6 +8,7 @@ import glob
 import sys
 import traceback
 import os
+import json
 
 __VERSION = 0.1
 
@@ -26,6 +27,15 @@ def lsd_dimensions():
                     "dimensionsCount" : {"$sum" : 1}}},
         {"$sort": SON([("dimensionsCount", -1)])}
     ])
+    # Local results json serialization -- dont do this at every request!
+    local_json = []
+    for result in dims["result"]:
+        local_json.append({"uri" : result["_id"]["uri"],
+                           "label" : result["_id"]["label"],
+                           "refs" : result["dimensionsCount"]
+                           })
+    with open('data.json', 'w') as outfile:
+        json.dump(local_json, outfile)
     return template('lsd-dimensions', results=dims)
 
 @route('/dimension', method = 'POST')
