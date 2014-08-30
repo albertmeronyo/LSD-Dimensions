@@ -15,22 +15,7 @@
   </tr>
   </thead>
 </table>
-<script>
-    function rowStyle(row) {
-        return 'overflow: hidden; text-overflow: ellipsis;';
-    }
-</script>
-</div>
 
-
-<div class="row">
-<a href="/harmonize/vocab/alldetails">
-  <button type="button" class="btn btn-primary btn-md">View All Details</button>
-</a>
-</div>
-<br>
-<div class="row">
-<a href="/harmonize">Back</a>
 </div>
 
 % include('footer.tpl')
