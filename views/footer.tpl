@@ -25,14 +25,5 @@
     <script src="/js/bootstrap.min.js"></script>
     <!-- Bootstrap Table -->
     <script src="/js/bootstrap-table.js"></script>
-    <script type="text/javascript">
-      function makesure(action) {
-        if (confirm('Are you sure?')) {
-	  window.location.href = '/harmonize/' + action
-        } else {
-        return false;
-        }
-      }
-    </script>
   </body>
 </html>

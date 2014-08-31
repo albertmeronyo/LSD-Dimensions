@@ -1,4 +1,4 @@
-from bottle import route, run, template, request, static_file
+from bottle import route, run, template, request, static_file, abort
 from pymongo import Connection
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 from bson.son import SON
@@ -20,6 +20,8 @@ def version():
     return "Version " + str(__VERSION)
 
 @route('/')
+@route('/dimensions')
+@route('/dimensions/')
 def lsd_dimensions():
     dims = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"},
@@ -29,43 +31,37 @@ def lsd_dimensions():
     ])
     # Local results json serialization -- dont do this at every request!
     local_json = []
+    dimension_id = 0
     for result in dims["result"]:
-        local_json.append({"uri" : result["_id"]["uri"],
+        local_json.append({"id" : dimension_id,
+                           "view" : "<a href='/dimensions/%s'><img src='/img/eye.png' alt='Details'></a>" % dimension_id,
+                           "uri" : result["_id"]["uri"],
                            "label" : result["_id"]["label"],
                            "refs" : result["dimensionsCount"]
                            })
+        dimension_id += 1
     with open('data.json', 'w') as outfile:
         json.dump(local_json, outfile)
     return template('lsd-dimensions', results=dims)
 
-@route('/dimension', method = 'POST')
-def dimension(__dim = None):
-    dim = None
-    if __dim:
-        dim = __dim
-    else:
-        dim = request.forms.get("dim")
-    print dim
-    sparql = SPARQLWrapper("http://lod.cedar-project.nl:8080/sparql/cedar")
-    det_dimension = """
-    PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX qb: <http://purl.org/linked-data/cube#>
-    SELECT DISTINCT ?code ?codel ?codelist ?concept
-    FROM <http://lod.cedar-project.nl/resource/harmonization>
-    WHERE {
-    <%s> a qb:DimensionProperty ;
-    qb:concept ?concept ;
-    rdfs:range ?range .
-    OPTIONAL {<%s> qb:codeList ?codelist .
-    ?codelist skos:hasTopConcept ?code .
-    ?code skos:prefLabel ?codel . }
-    }
-    """ % (dim, dim)
-    sparql.setQuery(det_dimension)
-    sparql.setReturnFormat(JSON)
-    details = sparql.query().convert()
-    return template('dimension', dim=dim, details=details)
+@route('/dimensions/:id', method='GET')
+def get_dimension(id):
+    # Avoid this lazy load on demand!
+    local_json = None
+    with open('data.json', 'r') as infile:
+        local_json = json.load(infile)
+    for dim in local_json:
+        if int(dim['id']) == int(id):
+            dimension_uri = dim['uri']
+    # Search for all we got about dimension_uri
+    results = db.dimensions.aggregate([
+        {"$unwind" : "$dimensions"},
+        {"$unwind" : "$codes"},
+        {"$group" : {"_id" : {"endpoint-uri" : "$endpoint.url"}}}
+        ])
+    for result in results["result"]:
+        print result    
+    abort(404, 'No document with id %s' % id)
 
 # Static Routes
 @route('/data.json')
