@@ -21,7 +21,6 @@ def version():
 
 @route('/')
 @route('/dimensions')
-@route('/dimensions/')
 def lsd_dimensions():
     dims = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"},
@@ -54,14 +53,19 @@ def get_dimension(id):
         if int(dim['id']) == int(id):
             dimension_uri = dim['uri']
     # Search for all we got about dimension_uri
-    results = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"},
-        {"$unwind" : "$codes"},
-        {"$group" : {"_id" : {"endpoint-uri" : "$endpoint.url"}}}
-        ])
-    for result in results["result"]:
-        print result    
-    abort(404, 'No document with id %s' % id)
+    endpoints_results = db.dimensions.aggregate([
+        {"$unwind" : "$dimensions"}, 
+        {"$unwind" : "$dimensions.codes"}, 
+        {"$match" : {"dimensions.uri" : dimension_uri}},
+        {"$group" : {"_id" : "$endpoint.url"}}
+    ])
+    codes_results = db.dimensions.aggregate([
+        {"$unwind" : "$dimensions"}, 
+        {"$unwind" : "$dimensions.codes"}, 
+        {"$match" : {"dimensions.uri" : dimension_uri}}, 
+        {"$group" : {"_id" : {"uri" : "$dimensions.codes.uri", "label" : "$dimensions.codes.label"}}}
+    ])
+    return template('dimension', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
 # Static Routes
 @route('/data.json')
