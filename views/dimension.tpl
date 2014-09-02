@@ -1,19 +1,29 @@
 % include('header.tpl', title='LSD Dimensions')
 
-<h2>Details for dimension {{dim}}</h2>
+<h2>Details for dimension <a href="{{dim}}" target="_blank">{{dim}}</a></h2>
 
-<h3>Endpoints with dimension {{dim}}</h3>
+<div class="container">
+<dl class="dl-horizontal">
+<dt>Endpoints</dt>
   %for endpoint in endpoints["result"]:
   %    ep = endpoint["_id"]
-  <p>{{ep}}</p>
+  <dd><a href="{{ep}}" target="_blank">{{ep}}</a></dd>
+  %end
+  %if not endpoints["result"]:
+  <dd>N/A</dd>
   %end
 
-<h3>Popular codes associated with dimension {{dim}}</h3>
+<dt>Codes</dt>
   %for code in codes["result"]:
   %    code_uri = code["_id"]["uri"]
   %    code_label = code["_id"]["label"]
-  <p>{{code_uri}}, {{code_label}}</p>
+  <dd><a href="{{code_uri}}" target="_blank">{{code_uri}}</a>, {{code_label}}</dd>
   %end
+  %if not codes["result"]:
+  <dd>N/A</dd>
+  %end
+</dl>
+</div>
 
 <a href="/dimensions">Back</a>
 
