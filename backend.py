@@ -53,12 +53,11 @@ def get_dimension(id):
         if int(dim['id']) == int(id):
             dimension_uri = dim['uri']
     # Search for all we got about dimension_uri
-    endpoints_results = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"}, 
-        {"$unwind" : "$dimensions.codes"}, 
-        {"$match" : {"dimensions.uri" : dimension_uri}},
-        {"$group" : {"_id" : "$endpoint.url"}}
-    ])
+    endpoints_results = db.dimensions.find(
+        {"dimensions.uri" : dimension_uri},
+        {"endpoint.url" : 1}
+    ).distinct("endpoint.url")
+    print endpoints_results
     codes_results = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"}, 
         {"$unwind" : "$dimensions.codes"}, 

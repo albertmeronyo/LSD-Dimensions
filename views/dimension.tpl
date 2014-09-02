@@ -5,11 +5,11 @@
 <div class="container">
 <dl class="dl-horizontal">
 <dt>Endpoints</dt>
-  %for endpoint in endpoints["result"]:
-  %    ep = endpoint["_id"]
+  %for endpoint in endpoints:
+  %    ep = endpoint
   <dd><a href="{{ep}}" target="_blank">{{ep}}</a></dd>
   %end
-  %if not endpoints["result"]:
+  %if not endpoints:
   <dd>N/A</dd>
   %end
 
