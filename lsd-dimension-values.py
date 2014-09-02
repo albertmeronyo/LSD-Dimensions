@@ -15,6 +15,21 @@ db = connection.lsddimensions
 
 db.dimensions.drop()
 
+# query = """
+#     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
+#     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+#     PREFIX qb: <http://purl.org/linked-data/cube#>
+#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+#     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
+#     WHERE {
+#     ?dimensionu a qb:DimensionProperty ;
+#     rdfs:label ?dimension .
+#     OPTIONAL {?dimensionu qb:codeList ?codelist .
+#     ?codelist skos:hasTopConcept ?codeu .
+#     ?codeu skos:prefLabel ?code . }
+#     } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
+# """
+
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -22,12 +37,19 @@ query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
     WHERE {
-    ?dimensionu a qb:DimensionProperty ;
-    rdfs:label ?dimension .
-    OPTIONAL {?dimensionu qb:codeList ?codelist .
+    ?dimensionu a qb:DimensionProperty .
+    ?dimensionu rdfs:label|skos:prefLabel ?dimension .
+    OPTIONAL {
+    ?obs a qb:Observation .
+    ?obs ?dimensionu ?codeu .
+    ?codeu rdfs:label|skos:prefLabel ?code .
+    }
+    OPTIONAL {
+    ?dimensionu qb:codeList ?codelist .
     ?codelist skos:hasTopConcept ?codeu .
-    ?codeu skos:prefLabel ?code . }
-    } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
+    ?codeu rdfs:label|skos:prefLabel ?code . }
+    }
+    LIMIT 1000
 """
 
 @timeout(60)
