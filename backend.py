@@ -41,7 +41,8 @@ def lsd_dimensions():
         dimension_id += 1
     with open('data.json', 'w') as outfile:
         json.dump(local_json, outfile)
-    return template('lsd-dimensions', results=dims)
+    num_endpoints = db.dimensions.count()
+    return template('lsd-dimensions', results=dims, num_endpoints=num_endpoints)
 
 @route('/dimensions/:id', method='GET')
 def get_dimension(id):
