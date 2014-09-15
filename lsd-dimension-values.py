@@ -6,6 +6,7 @@ import urllib2
 import json
 from simplejson import JSONDecodeError
 import socket
+import time
 from timeout import timeout, TimeoutError
 from xml.parsers.expat import ExpatError
 from pymongo import Connection
@@ -15,21 +16,6 @@ db = connection.lsddimensions
 
 db.dimensions.drop()
 
-# query = """
-#     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
-#     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-#     PREFIX qb: <http://purl.org/linked-data/cube#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
-#     WHERE {
-#     ?dimensionu a qb:DimensionProperty ;
-#     rdfs:label ?dimension .
-#     OPTIONAL {?dimensionu qb:codeList ?codelist .
-#     ?codelist skos:hasTopConcept ?codeu .
-#     ?codeu skos:prefLabel ?code . }
-#     } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
-# """
-
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -37,20 +23,35 @@ query = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
     WHERE {
-    ?dimensionu a qb:DimensionProperty .
-    ?dimensionu rdfs:label|skos:prefLabel ?dimension .
-    OPTIONAL {
-    ?obs a qb:Observation .
-    ?obs ?dimensionu ?codeu .
-    ?codeu rdfs:label|skos:prefLabel ?code .
-    }
-    OPTIONAL {
-    ?dimensionu qb:codeList ?codelist .
+    ?dimensionu a qb:DimensionProperty ;
+    rdfs:label ?dimension .
+    OPTIONAL {?dimensionu qb:codeList ?codelist .
     ?codelist skos:hasTopConcept ?codeu .
-    ?codeu rdfs:label|skos:prefLabel ?code . }
-    }
-    LIMIT 1000
+    ?codeu skos:prefLabel ?code . }
+    } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
 """
+
+# query = """
+#     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
+#     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+#     PREFIX qb: <http://purl.org/linked-data/cube#>
+#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+#     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
+#     WHERE {
+#     ?dimensionu a qb:DimensionProperty .
+#     ?dimensionu rdfs:label|skos:prefLabel ?dimension .
+#     OPTIONAL {
+#     ?obs a qb:Observation .
+#     ?obs ?dimensionu ?codeu .
+#     ?codeu rdfs:label|skos:prefLabel ?code .
+#     }
+#     OPTIONAL {
+#     ?dimensionu qb:codeList ?codelist .
+#     ?codelist skos:hasTopConcept ?codeu .
+#     ?codeu rdfs:label|skos:prefLabel ?code . }
+#     }
+#     LIMIT 1000
+# """
 
 @timeout(60)
 def query_endpoint(endpoint_url, query):
@@ -116,16 +117,16 @@ for endpoint in datahub_results:
             code_label = None
             if 'dimensionu' in result and 'value' in result['dimensionu']:
                 dimension_uri = result["dimensionu"]["value"]
-                print 'DIMENSION URI: ' + dimension_uri
+                # print 'DIMENSION URI: ' + dimension_uri
                 if 'dimension' in result and 'value' in result['dimension']:
                     dimension_label = result["dimension"]["value"]
-                    print 'DIMENSION LABEL: ' + dimension_label
+                    # print 'DIMENSION LABEL: ' + dimension_label
             if 'codeu' in result and 'value' in result['codeu']:
                 code_uri = result["codeu"]["value"]
-                print 'CODE URI: ' + code_uri
+                # print 'CODE URI: ' + code_uri
                 if 'code' in result and 'value' in result['code']:
                     code_label = result["code"]["value"]
-                    print 'CODE LABEL: ' + code_label
+                    # print 'CODE LABEL: ' + code_label
             dimensions[dimension_uri] = dimension_label
             codes[code_uri] = code_label
             if dimension_uri not in dimensions_codes:
@@ -159,7 +160,10 @@ for endpoint in datahub_results:
         document_entry["dimensions"] = dimensions_entry
     db.dimensions.save(document_entry)
     current_endpoint += 1
-        
+
+connection.copy_database("lsddimensionsprod", "lsddimensions" + str(int(time.time())))
+connection.drop_database("lsddimensionsprod")
+connection.copy_database("lsddimensions", "lsddimensionsprod")
 
 # Serialize list to JSON
 # endpoints_file = open('endpoints.json', 'w')

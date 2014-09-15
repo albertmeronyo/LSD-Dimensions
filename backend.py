@@ -13,7 +13,7 @@ import json
 __VERSION = 0.1
 
 connection = Connection('localhost', 27017)
-db = connection.lsddimensions
+db = connection.lsddimensionsprod
 
 @route('/version')
 def version():
