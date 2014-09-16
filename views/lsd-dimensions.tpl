@@ -1,7 +1,6 @@
 % include('header.tpl', title='CEDAR Harmonize')
 
 <div class="container" style="margin: 20px auto;">
-<p>The following shows a list of the current dimensions (and their codes) in Linked Statistical Data.</p>
 %  num_dimensions = len(results["result"])
 <p class="lead" style="margin-bottom: 50px">Counting <b>{{num_dimensions}}</b> dimensions in <b>{{num_endpoints}}</b> SPARQL endpoints in Linked Statistical Data</p>
 

@@ -51,6 +51,5 @@
       <div class="starter-template">
 
 	<h1>LSD Dimensions</h1>
-	<p>LSD Dimensions is a crawler of all dimensions and codes
-	currently used in Linked Statistical Data.</p>
+
 
