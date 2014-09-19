@@ -67,6 +67,15 @@ def get_dimension(id):
     ])
     return template('dimension', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
+
+@route('/about', method='GET')
+def about():
+    return template('about')
+
+@route('/analytics', method='GET')
+def analytics():
+    return template('analytics')
+
 # Static Routes
 @route('/data.json')
 def data():

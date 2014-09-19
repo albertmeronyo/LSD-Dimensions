@@ -38,7 +38,9 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/harmonize">Home</a></li>
+            <li class="active"><a href="/dimensions">Home</a></li>
+	    <li class="active"><a href="/about">About</a></li>
+	    <li class="active"><a href="/analytics">Analytics</a></li>
             <li><a href="https://github.com/albertmeronyo/lsd-dimensions" target="_blank">GitHub</a></li>
             <li><a href="mailto:albert.meronyo@gmail.com">Contact</a></li>
           </ul>
