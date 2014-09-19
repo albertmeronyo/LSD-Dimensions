@@ -1,7 +1,51 @@
-% include('header.tpl', title='LSD Dimensions')
+% include('header.tpl', page='about')
 
 <div class="container" style="margin: 20px auto;">
-<p>About</p>
+
+<h2>About</h2>
+
+<p class="lead"><a href="/dimensions">LSD Dimensions</a> is an observatory of the current usage of <a href="http://www.w3.org/TR/vocab-data-cube/#cubes-model" target="_blank">dimensions</a> and <a href="http://www.w3.org/TR/vocab-data-cube/#schemes" target="_blank">codes</a> in Linked Statistical Data (LSD).</p>
+
+<p class="text-justify"><a href="/dimensions">LSD Dimensions</a> is an aggregator of all qb:DimensionProperty resources (and their associated triples), as defined in the <a href="http://www.w3.org/TR/vocab-data-cube/" target="_blank">RDF Data Cube vocabulary</a> (W3C recommendation for publishing statistical data on the Web), that can be currently found in the <a href="http://linkeddata.org/" target="_blank">Linked Data Cloud</a> (read: the SPARQL endpoints in <a href="http://datahub.io/" target="_blank">Datahub.io</a>). Its purpose is to improve the reusability of statistical dimensions, codes and concept schemes in the Web of Data, providing an interface for users (future work: also for programs) to search for resources commonly used to describe open statistical datasets.</p>
+
+<h3>Usage</h3>
+
+<p class="text-justify">The <a href="/dimensions">main view</a> shows the count of queried SPARQL endpoints and the number of retrieved dimensions, together with a table that displays these dimensions.<p>
+
+<ul>
+	<li><p class="text-justify"><strong>Sorting.</strong> Dimensions can be sorted by their dimension URI, label and number of references (i.e. number of times a dimension is used in the endpoints) by clicking on the column headers.</p>
+	<li><p class="text-justify"><strong>Pagination.</strong> The number of rows per page can be customized and browsed by clicking at the bottom selectors.</p>
+	<li><p class="text-justify"><strong>Search.</strong> String-based search can be performed by writing the search query in the top search field.
+</ul>
+
+<p class="text-justify">Any of these dimensions can be further explored by clicking at the eye icon on the left. The <a href="/dimensions/4">dimension detail view</a> shows<p>
+
+<ul>
+	<li><p class="text-justify"><strong>Endpoints.</strong>. The endpoints that make use of that dimension.</p>
+	<li><p class="text-justify"><strong>Codes.</strong> Popular codes that are defined (future work: also assigned) as valid values for that dimension.</p>
+</ul>
+
+<h3>Motivation</h3>
+
+<p class="text-justify"><a href="http://www.w3.org/TR/vocab-data-cube/" target="_blank">RDF Data Cube</a> (QB) has boosted the publication of Linked Statistical Data (LSD) as Linked Open Data (LOD) by providing a means ``to publish multi-dimensional data, such as statistics, on the web in such a way that they can be linked to related data sets and concepts''. QB defines <em>cubes</em> as sets of <em>observations</em>
+affected by <em>dimensions</em>, <em>measures</em> and <em>attributes</em>. For example, the observation ``the measured life
+expectancy of males in Newport in the period 2004-2006 is 76.7 years'' has three dimensions (<em>time period</em>, with value <em>2004-2006</em>; <em>region</em>, with value <em>Newport</em>; and <em>sex</em>, with value <em>male</em>), a measure (<em>population life expectancy</em>) and two attributes (the units of measure, <em>years</em>; and the metadata status, <em>measured</em>, to make explicit that the observation was measured instead of, for instance, estimated or interpolated). In some cases, it is useful to also define <em>codes</em>, a closed set of values taken by a dimension (e.g. sensible codes for the dimension <em>sex</em> could be <em>male</em> and <em>female</em>).<p>
+
+<p class="text-justify">There is a vast diversity of domains to publish LSD about, and quite some dimensions and codes can be very heterogeneous, domain specific and <a href="http://csarven.ca/sense-of-lsd-analysis" target="_blank">hardly comparable</a>. To this end, QB allows users to mint their own URIs to create arbitrary dimensions and associated codes. Conversely, some other dimensions and codes are quite common in statistics, and could be easily reused. However, publishers of LSD have no means to monitor the dimensions and codes currently used in other datasets published in QB as LOD, and consequently they cannot (a) link to them; nor (b) reuse them.<p>
+
+<p class="text-justify">This is the motivation behind <a href="/dimensions">LSD Dimensions</a>: it monitors the usage of existing dimensions and codes in LSD. It allows users to browse, search and gain insight into these dimensions and codes. We depict the diversity of statistical variables in LOD, improving their reusability.</p>
+
+<h3>How Does It Work?</h3>
+
+<p class="text-justify">Read our <a href="#">paper</a>.</p>
+
+<h3>Future Extensions</h3>
+
+<ul>
+	<li><p class="text-justify">Display not only defined codes, but used codes in qb:Observation resources.</p>
+	<li><p class="text-justify">Model the retrieved data in RDF and serve it via a SPARQL endpoint.</p>
+	<li><p class="text-justify">Addition of other interesting dimension metadata (such as rdfs:subPropertyOf or rdfs:range).</p>
+	<li><p class="text-justify">Interesting data <a href="/analytics">analyses</a> on all dimensions.</p>
 </div>
 
 % include('footer.tpl')

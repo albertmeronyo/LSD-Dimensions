@@ -38,9 +38,21 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+% if page == 'home':
             <li class="active"><a href="/dimensions">Home</a></li>
+% else:
+            <li><a href="/dimensions">Home</a></li>
+% end
+% if page == 'about':
 	    <li class="active"><a href="/about">About</a></li>
+% else:
+	    <li><a href="/about">About</a></li>
+% end
+% if page == 'analytics':
 	    <li class="active"><a href="/analytics">Analytics</a></li>
+% else:
+	    <li><a href="/analytics">Analytics</a></li>
+% end
             <li><a href="https://github.com/albertmeronyo/lsd-dimensions" target="_blank">GitHub</a></li>
             <li><a href="mailto:albert.meronyo@gmail.com">Contact</a></li>
           </ul>
