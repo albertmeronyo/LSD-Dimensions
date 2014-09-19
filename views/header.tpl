@@ -50,6 +50,6 @@
 
       <div class="starter-template">
 
-	<h1>LSD Dimensions</h1>
+	<h1>LSD Dimensions (dev)</h1>
 
 
