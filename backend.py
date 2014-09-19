@@ -58,7 +58,6 @@ def get_dimension(id):
         {"dimensions.uri" : dimension_uri},
         {"endpoint.url" : 1}
     ).distinct("endpoint.url")
-    print endpoints_results
     codes_results = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"}, 
         {"$unwind" : "$dimensions.codes"}, 
