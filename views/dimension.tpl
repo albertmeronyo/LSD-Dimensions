@@ -1,4 +1,4 @@
-% include('header.tpl', title='LSD Dimensions')
+% include('header.tpl', page='home')
 
 <h2>Details for dimension <a href="{{dim}}" target="_blank">{{dim}}</a></h2>
 

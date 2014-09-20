@@ -1,4 +1,4 @@
-% include('header.tpl', title='CEDAR Harmonize')
+% include('header.tpl', page='home')
 
 <div class="container" style="margin: 20px auto;">
 %  num_dimensions = len(results["result"])
