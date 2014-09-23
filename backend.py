@@ -63,7 +63,6 @@ def get_dimension(id):
         {"dimensions.uri" : dimension_uri},
         {"endpoint.url" : 1}
     ).distinct("endpoint.url")
-    print endpoints_results
     codes_results = db.dimensions.aggregate([
         {"$unwind" : "$dimensions"}, 
         {"$unwind" : "$dimensions.codes"}, 
@@ -92,14 +91,7 @@ def analytics():
     freqs = [dim["dimensionsCount"] for dim in dims["result"]]
     dim_names = [dim["_id"]["uri"] for dim in dims["result"]]
 
-    x = np.array(range(0, len(dim_names)))
-    y = np.array(freqs)
-    my_xticks = dim_names
-    #plt.xticks(x, my_xticks, rotation=90)
-    plt.plot(x, y)
-    plt.grid(True)
-    plt.savefig('views/img/dim-freq.png', bbox_inches='tight')
-    plt.close()
+    dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
 
     ### 2. Endpoints using LSD dimensions
     figure(1, figsize=(6,6))
@@ -111,14 +103,9 @@ def analytics():
     frac_without = 100 - frac_with
 
     labels = 'With dimensions', 'Without dimensions'
-    fracs = [frac_with, frac_without]
-    explode=(0, 0)
-
-    plt.pie(fracs, explode=explode, labels=labels, autopct='%1.1f%%', shadow=True)
-    plt.savefig('views/img/endpoint-usage.png', bbox_inches='tight')
-    plt.close()
+    fracs = [['With dimensions', frac_with], ['Without dimensions', frac_without]]
     
-    return template('analytics')
+    return template('analytics', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs)
 
 # Static Routes
 @route('/data.json')
