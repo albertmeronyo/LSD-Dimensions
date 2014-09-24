@@ -9,11 +9,8 @@ import sys
 import traceback
 import os
 import json
-import numpy as np
-import matplotlib.pyplot as plt
 from pymongo import Connection
 from bson.son import SON
-from pylab import *
 
 __VERSION = 0.1
 
@@ -94,18 +91,23 @@ def analytics():
     dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
 
     ### 2. Endpoints using LSD dimensions
-    figure(1, figsize=(6,6))
-    ax = axes([0.1, 0.1, 0.8, 0.8])
 
     num_endpoints = db.dimensions.find({"endpoint" : {"$exists" : "1"}}).count()
     with_dims = db.dimensions.find({"dimensions" : {"$exists" : "1"}}).count()
-    frac_with = (float(with_dims) / num_endpoints) * 100
-    frac_without = 100 - frac_with
+    fracs = [['With dimensions', with_dims], ['Without dimensions', num_endpoints - with_dims]]
 
-    labels = 'With dimensions', 'Without dimensions'
-    fracs = [['With dimensions', frac_with], ['Without dimensions', frac_without]]
+    ### 3. Dimensions with and without codes
+    total_dims = len(dims["result"])
+    codes = db.dimensions.aggregate([
+        {"$match" : {"dimensions.codes.uri" : {"$exists" : 1}}}, 
+        {"$unwind" : "$dimensions"}, 
+        {"$unwind" : "$dimensions.codes"}, 
+        {"$group": {"_id" : {"duri" : "$dimensions.uri"}}}
+    ])
+    with_codes = len(codes["result"])
+    fracs_codes = [['With codes', with_codes], ['Without codes', total_dims - with_codes]]
     
-    return template('analytics', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs)
+    return template('analytics', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs, fracs_codes=fracs_codes)
 
 # Static Routes
 @route('/data.json')
