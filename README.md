@@ -23,7 +23,7 @@ describe open statistical datasets.
 
 ## Online instance
 
-See [http://lsd-dimensions.org]
+See http://lsd-dimensions.org
 
 ## Dependencies
 
