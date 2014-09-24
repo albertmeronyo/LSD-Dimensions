@@ -86,7 +86,7 @@ def analytics():
     ])
 
     freqs = [dim["dimensionsCount"] for dim in dims["result"]]
-    dim_names = [dim["_id"]["uri"] for dim in dims["result"]]
+    dim_names = [dim["_id"]["label"] for dim in dims["result"]]
 
     dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
 

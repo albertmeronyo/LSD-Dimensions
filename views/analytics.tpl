@@ -25,6 +25,12 @@
             
         var options = {
           legend: 'none',
+          hAxis : {textStyle : { color: '#505080',
+//	    fontName: <string>,
+	    fontSize: 10}}
+//	    bold: <boolean>,
+//	    italic: <boolean> },
+//        curveType: 'function',
 //        title: 'Dimension frequency',
         };
 
@@ -35,6 +41,9 @@
     </script>
 
   </div>
+</div>
+<div class="row">
+  <div class="col-md-12" style="height: 80px;"></div>
 </div>
 <div class="row">
   <div class="col-md-12">
