@@ -4,7 +4,106 @@
 
 <h2>Analytics</h2>
 
-<p class="text-center">Coming soon</p>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>Dimension frequency distribution</h3>
+    <p class="text-center">Distribution of distinct LSD dimensions according to the frequency in which they appear in LOD datasets.</p>
+    <div id="chart_div" style="width: auto; height: 500px;"></div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Dimension', 'Frequency'],
+          % for df in dims_freqs:
+            ['{{df[0]}}', {{df[1]}}],
+          % end
+            ['','']
+          ]);
+            
+        var options = {
+          legend: 'none',
+//        title: 'Dimension frequency',
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <h3>Datasets using qb:DimensionProperty</h3>
+    <p class="text-center">Proportion of LOD datasets using any qb:DimensionProperty.</p>
+    <div id="piechart" style="width: auto; height: 500px;"></div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Dimension usage', 'Share'],
+          % for f in fracs:
+            ['{{f[0]}}', {{f[1]}}],
+          % end
+            ['','']
+        ]);
+
+        var options = {
+          legend: 'none',
+//        title: 'Share of datasets using QB dimensions',
+          pieHole: 0.4
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </div> 
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>qb:DimensionProperty defining codes</h3>
+    <p class="text-center">Proportion of dimensions defining at least one code.</p>
+    <div id="piechart-2" style="width: auto; height: 500px;"></div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Dimension usage', 'Share'],
+          % for f in fracs_codes:
+            ['{{f[0]}}', {{f[1]}}],
+          % end
+            ['','']
+        ]);
+
+        var options = {
+          legend: 'none',
+//        title: 'Share of QB dimensions defining codes',
+          pieHole: 0.4,
+          colors: ['green', 'orange']
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart-2'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+  </div>
+</div>
+
 
 </div>
 

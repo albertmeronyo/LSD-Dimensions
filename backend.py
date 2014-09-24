@@ -9,6 +9,8 @@ import sys
 import traceback
 import os
 import json
+from pymongo import Connection
+from bson.son import SON
 
 __VERSION = 0.1
 
@@ -46,7 +48,7 @@ def lsd_dimensions():
 
 @route('/dimensions/:id', method='GET')
 def get_dimension(id):
-    # Avoid this lazy load on demand!
+    # TODO: avoid this lazy load on demand
     local_json = None
     with open('data.json', 'r') as infile:
         local_json = json.load(infile)
@@ -73,7 +75,39 @@ def about():
 
 @route('/analytics', method='GET')
 def analytics():
-    return template('analytics')
+    # TODO: avoid this lazy load on demand
+
+    ### 1. Dim-freq distribution
+    dims = db.dimensions.aggregate([
+        {"$unwind" : "$dimensions"},
+        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}, 
+                    "dimensionsCount" : {"$sum" : 1}}},
+        {"$sort": SON([("dimensionsCount", -1)])}
+    ])
+
+    freqs = [dim["dimensionsCount"] for dim in dims["result"]]
+    dim_names = [dim["_id"]["uri"] for dim in dims["result"]]
+
+    dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
+
+    ### 2. Endpoints using LSD dimensions
+
+    num_endpoints = db.dimensions.find({"endpoint" : {"$exists" : "1"}}).count()
+    with_dims = db.dimensions.find({"dimensions" : {"$exists" : "1"}}).count()
+    fracs = [['With dimensions', with_dims], ['Without dimensions', num_endpoints - with_dims]]
+
+    ### 3. Dimensions with and without codes
+    total_dims = len(dims["result"])
+    codes = db.dimensions.aggregate([
+        {"$match" : {"dimensions.codes.uri" : {"$exists" : 1}}}, 
+        {"$unwind" : "$dimensions"}, 
+        {"$unwind" : "$dimensions.codes"}, 
+        {"$group": {"_id" : {"duri" : "$dimensions.uri"}}}
+    ])
+    with_codes = len(codes["result"])
+    fracs_codes = [['With codes', with_codes], ['Without codes', total_dims - with_codes]]
+    
+    return template('analytics', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs, fracs_codes=fracs_codes)
 
 # Static Routes
 @route('/data.json')
