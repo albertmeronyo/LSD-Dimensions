@@ -130,4 +130,4 @@ def images(filename):
 def fonts(filename):
     return static_file(filename, root='views/fonts')
 
-run(host = sys.argv[1], port = sys.argv[2], debug = True)
+run(host = sys.argv[1], port = sys.argv[2], debug = True, reloader = True, server = 'cherrypy')
