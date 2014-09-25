@@ -21,6 +21,10 @@ describe open statistical datasets.
 3. Storing all in a messy MongoDB instance
 4. Displaying it using Boostrap Table
 
+## Online instance
+
+See http://lsd-dimensions.org
+
 ## Dependencies
 
 - Python 2.7.5
