@@ -53,7 +53,7 @@ query = """
 #     LIMIT 1000
 # """
 
-@timeout(90)
+@timeout(70)
 def query_endpoint(endpoint_url, query):
     endpoint_results = None
     print 'ENDPOINT: ' + endpoint_url
