@@ -92,6 +92,7 @@ datahub_json = json.load(datahub_stream)
 datahub_results = datahub_json["results"]
 
 num_endpoints = len(datahub_results)
+print num_endpoints
 current_endpoint = 1
 
 # Query endpoints for variables and values
@@ -161,9 +162,10 @@ for endpoint in datahub_results:
     db.dimensions.save(document_entry)
     current_endpoint += 1
 
-connection.copy_database("lsddimensionsprod", "lsddimensions" + str(int(time.time())))
-connection.drop_database("lsddimensionsprod")
-connection.copy_database("lsddimensions", "lsddimensionsprod")
+if db.dimensions.count() > 500:
+    connection.copy_database("lsddimensionsprod", "lsddimensions" + str(int(time.time())))
+    connection.drop_database("lsddimensionsprod")
+    connection.copy_database("lsddimensions", "lsddimensionsprod")
 
 # Serialize list to JSON
 # endpoints_file = open('endpoints.json', 'w')
