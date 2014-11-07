@@ -37,7 +37,7 @@ expectancy of males in Newport in the period 2004-2006 is 76.7 years'' has three
 
 <h3>How Does It Work?</h3>
 
-<p class="text-justify">Read our <a href="#">paper</a>.</p>
+<p class="text-justify">Read our <a href="http://www.albertmeronyo.org/wp-content/uploads/2014/10/ekawpd2014_submission_7_A.pdf">paper</a>.</p>
 
 <h3>Future Extensions</h3>
 
