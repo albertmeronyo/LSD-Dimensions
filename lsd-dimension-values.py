@@ -31,6 +31,19 @@ query = """
     } GROUP BY ?dimensionu ?dimension ?codeu ?code ORDER BY ?dimension
 """
 
+query_dsd = """
+    PREFIX qb: <http://purl.org/linked-data/cube#>
+
+    SELECT ?dsd ?componentValue ?p ?o
+    WHERE {
+    ?dsd a qb:DataStructureDefinition ;
+         qb:component ?component .
+    ?component ?componentType ?componentValue .
+    ?componentValue ?p ?o .
+    FILTER (?componentType IN (qb:dimension, qb:measure, qb:attribute)) 
+    } ORDER BY ?dsd
+"""
+
 # query = """
 #     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
 #     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -98,6 +111,7 @@ current_endpoint = 1
 # Query endpoints for variables and values
 # datahub_results = [{"url" : "http://worldbank.270a.info/sparql"}]
 for endpoint in datahub_results:
+    # Old crap, dimensions and codes
     print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query)
@@ -111,6 +125,7 @@ for endpoint in datahub_results:
         dimensions = {}
         dimensions_codes = {}
         codes = {}
+
         for result in endpoint_results["results"]["bindings"]:
             dimension_uri = None
             dimension_label = None
@@ -134,6 +149,65 @@ for endpoint in datahub_results:
                 dimensions_codes[dimension_uri] = [code_uri]
             else:
                 dimensions_codes[dimension_uri].append(code_uri)
+    except AttributeError:
+        print "The endpoint did not return JSON"
+        pass
+    except TypeError:
+        print "The endpoint did not return valid JSON"
+        pass
+    except KeyError:
+        print "The endpoint returned an empty response"
+        pass
+    document_entry = {}
+    endpoint_entry = endpoint
+    dimensions_entry = []
+    for key, value in dimensions_codes.iteritems():
+        codes_entry = []
+        for code in value:
+            if code:
+                codes_entry.append({"uri" : code, "label" : codes[code]})
+        if codes_entry:
+            dimensions_entry.append({"uri" : key, "label" : dimensions[key], "codes" : codes_entry})
+        else:
+            if key and dimensions[key]:
+                dimensions_entry.append({"uri" : key, "label" : dimensions[key]})
+    document_entry["endpoint"] = endpoint_entry
+    if dimensions_entry:
+        document_entry["dimensions"] = dimensions_entry
+    db.dimensions.save(document_entry)
+
+
+    # New crap, DSDs
+    print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
+    try:
+        endpoint_results = query_endpoint(endpoint["url"], query_dsd)
+    except TimeoutError:
+        print "Endpoint timeout"
+        pass
+    except ValueError:
+        print "Endpoint and query combination are malformed"
+        pass
+    try:        
+        dsds_components = {}
+        components = {}
+
+        for result in endpoint_results["results"]["bindings"]:
+            dsd_uri = None
+            component_s = None
+            component_p = None
+            component_o = None
+            if 'dsd' in result and 'value' in result['dsd']:
+                dsd_uri = result["dsd"]["value"]                
+            if 'componentValue' in result and 'value' in result['componentValue']:
+                component_s = result["componentValue"]["value"]
+            if 'p' in result and 'value' in result['p']:
+                component_p = result["p"]["value"]
+            if 'o' in result and 'value' in result['o']:
+                component_o = result["o"]["value"]
+            component = [component_s, component_p, component_o]
+            if dsd_uri not in dsd_components:
+                dsd_components[dsd_uri] = []
+            dsd_components[dsd_uri].append(component)            
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
