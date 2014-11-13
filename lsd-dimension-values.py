@@ -219,14 +219,15 @@ for endpoint in datahub_results:
     endpoint_uri = endpoint["url"]
     for key, value in dsds_components.iteritems():
         document_entry = {}
-        dsd_entry = []
+        dsd_entry = None
         dsd_uri = key
         components_entry = []
         for component in value:
             if component:
                 components_entry.append({"p" : component[0], "o" : component[1]})
         if components_entry:
-            dsd_entry.append({"uri" : dsd_uri, "components" : components_entry})
+            dsd_entry["uri"] = dsd_uri
+            dsd_entry["components"] = components_entry
         else:
             if key and dsds_components[key]:
                 dsd_entry.append({"uri" : dsd_uri})
