@@ -15,6 +15,7 @@ connection = Connection('localhost', 27017)
 db = connection.lsddimensions
 
 db.dimensions.drop()
+db.dsds.drop()
 
 query = """
     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
@@ -189,8 +190,6 @@ for endpoint in datahub_results:
         pass
     try:        
         dsds_components = {}
-        components = {}
-
         for result in endpoint_results["results"]["bindings"]:
             dsd_uri = None
             component_s = None
@@ -205,9 +204,9 @@ for endpoint in datahub_results:
             if 'o' in result and 'value' in result['o']:
                 component_o = result["o"]["value"]
             component = [component_s, component_p, component_o]
-            if dsd_uri not in dsd_components:
-                dsd_components[dsd_uri] = []
-            dsd_components[dsd_uri].append(component)            
+            if dsd_uri not in dsds_components:
+                dsds_components[dsd_uri] = []
+            dsds_components[dsd_uri].append(component)            
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
@@ -219,21 +218,22 @@ for endpoint in datahub_results:
         pass
     document_entry = {}
     endpoint_entry = endpoint
-    dimensions_entry = []
-    for key, value in dimensions_codes.iteritems():
-        codes_entry = []
-        for code in value:
-            if code:
-                codes_entry.append({"uri" : code, "label" : codes[code]})
-        if codes_entry:
-            dimensions_entry.append({"uri" : key, "label" : dimensions[key], "codes" : codes_entry})
+    dsd_entry = []
+    for key, value in dsds_components.iteritems():
+        dsd_uri = key
+        components_entry = []
+        for component in value:
+            if component:
+                components_entry.append({"s" : component[0], "p" : component[1], "o" : component[2]})
+        if components_entry:
+            dsd_entry.append({"uri" : dsd_uri, "components" : components_entry})
         else:
-            if key and dimensions[key]:
-                dimensions_entry.append({"uri" : key, "label" : dimensions[key]})
+            if key and dsds_components[key]:
+                dsd_entry.append({"uri" : dsd_uri})
     document_entry["endpoint"] = endpoint_entry
-    if dimensions_entry:
-        document_entry["dimensions"] = dimensions_entry
-    db.dimensions.save(document_entry)
+    if dsd_entry:
+        document_entry["dsds"] = dsd_entry
+    db.dsds.save(document_entry)
     current_endpoint += 1
 
 if db.dimensions.count() > 500:
