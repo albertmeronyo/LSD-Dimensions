@@ -3,6 +3,7 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, EndPointNotFound, EndPointInternalError
 import urllib2
+from httplib import BadStatusLine
 import json
 from simplejson import JSONDecodeError
 import socket
@@ -92,6 +93,9 @@ def query_endpoint(endpoint_url, query):
         pass
     except ExpatError:
         print "The endpoint returned XML instead of JSON"
+        pass
+    except BadStatusLine:
+        print "The endpoint returned bad HTTP"
         pass
     return endpoint_results
 
@@ -195,13 +199,11 @@ for endpoint in datahub_results:
             component_o = None
             if 'dsd' in result and 'value' in result['dsd']:
                 dsd_uri = result["dsd"]["value"]                
-            if 'componentValue' in result and 'value' in result['componentValue']:
-                component_s = result["componentValue"]["value"]
             if 'p' in result and 'value' in result['p']:
                 component_p = result["p"]["value"]
             if 'o' in result and 'value' in result['o']:
                 component_o = result["o"]["value"]
-            component = [component_s, component_p, component_o]
+            component = [component_p, component_o]
             if dsd_uri not in dsds_components:
                 dsds_components[dsd_uri] = []
             dsds_components[dsd_uri].append(component)            
@@ -214,15 +216,15 @@ for endpoint in datahub_results:
     except KeyError:
         print "The endpoint returned an empty response"
         pass
-    document_entry = {}
     endpoint_uri = endpoint["url"]
-    dsd_entry = []
     for key, value in dsds_components.iteritems():
+        document_entry = {}
+        dsd_entry = []
         dsd_uri = key
         components_entry = []
         for component in value:
             if component:
-                components_entry.append({"s" : component[0], "p" : component[1], "o" : component[2]})
+                components_entry.append({"p" : component[0], "o" : component[1]})
         if components_entry:
             dsd_entry.append({"uri" : dsd_uri, "components" : components_entry})
         else:
