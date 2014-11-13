@@ -34,7 +34,6 @@ query = """
 
 query_dsd = """
     PREFIX qb: <http://purl.org/linked-data/cube#>
-
     SELECT ?dsd ?componentValue ?p ?o
     WHERE {
     ?dsd a qb:DataStructureDefinition ;
@@ -108,6 +107,7 @@ datahub_results = datahub_json["results"]
 num_endpoints = len(datahub_results)
 print num_endpoints
 current_endpoint = 1
+endpoint_results = None
 
 # Query endpoints for variables and values
 # datahub_results = [{"url" : "http://worldbank.270a.info/sparql"}]
@@ -190,6 +190,7 @@ for endpoint in datahub_results:
         pass
     try:        
         dsds_components = {}
+
         for result in endpoint_results["results"]["bindings"]:
             dsd_uri = None
             component_s = None
@@ -217,7 +218,7 @@ for endpoint in datahub_results:
         print "The endpoint returned an empty response"
         pass
     document_entry = {}
-    endpoint_entry = endpoint
+    endpoint_uri = endpoint["url"]
     dsd_entry = []
     for key, value in dsds_components.iteritems():
         dsd_uri = key
@@ -230,10 +231,10 @@ for endpoint in datahub_results:
         else:
             if key and dsds_components[key]:
                 dsd_entry.append({"uri" : dsd_uri})
-    document_entry["endpoint"] = endpoint_entry
-    if dsd_entry:
-        document_entry["dsds"] = dsd_entry
-    db.dsds.save(document_entry)
+        document_entry["endpoint"] = endpoint_uri
+        if dsd_entry:
+            document_entry["dsd"] = dsd_entry
+        db.dsds.save(document_entry)
     current_endpoint += 1
 
 if db.dimensions.count() > 500:
