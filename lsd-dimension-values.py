@@ -35,10 +35,11 @@ query = """
 
 query_dsd = """
     PREFIX qb: <http://purl.org/linked-data/cube#>
-    SELECT ?dsd ?p ?o
+    SELECT ?dsd ?component ?p ?o
     WHERE {
     ?dsd a qb:DataStructureDefinition ;
-    qb:component [ ?p ?o ] .
+      qb:component ?component .
+    ?component ?p ?o .
     } ORDER BY ?dsd
 """
 
@@ -178,12 +179,14 @@ for endpoint in datahub_results:
             component_p = None
             component_o = None
             if 'dsd' in result and 'value' in result['dsd']:
-                dsd_uri = result["dsd"]["value"]                
+                dsd_uri = result["dsd"]["value"]
+            if 'component' in result and 'value' in result['component']:
+                component_s = result["component"]["value"] 
             if 'p' in result and 'value' in result['p']:
                 component_p = result["p"]["value"]
             if 'o' in result and 'value' in result['o']:
                 component_o = result["o"]["value"]
-            component = [component_p, component_o]
+            component = [component_s, component_p, component_o]
             if dsd_uri not in dsds_components:
                 dsds_components[dsd_uri] = []
             dsds_components[dsd_uri].append(component)            
@@ -204,7 +207,7 @@ for endpoint in datahub_results:
         components_entry = []
         for component in value:
             if component:
-                components_entry.append({"p" : component[0], "o" : component[1]})
+                components_entry.append({"s" : component[0], "p" : component[1], "o" : component[2]})
         if components_entry:
             dsd_entry["uri"] = dsd_uri
             dsd_entry["components"] = components_entry
