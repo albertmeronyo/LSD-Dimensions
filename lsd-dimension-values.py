@@ -220,7 +220,7 @@ for endpoint in datahub_results:
         db.dsds.save(document_entry)
     current_endpoint += 1
 
-if db.dimensions.count() > 500:
+if db.dimensions.count() > 500 and db.dsds.count() > 1000:
     connection.copy_database("lsddimensionsprod", "lsddimensions" + str(int(time.time())))
     connection.drop_database("lsddimensionsprod")
     connection.copy_database("lsddimensions", "lsddimensionsprod")
