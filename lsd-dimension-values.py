@@ -42,28 +42,7 @@ query_dsd = """
     } ORDER BY ?dsd
 """
 
-# query = """
-#     PREFIX sdmx: <http://purl.org/linked-data/sdmx#>
-#     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-#     PREFIX qb: <http://purl.org/linked-data/cube#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     SELECT DISTINCT ?dimensionu ?dimension ?codeu ?code
-#     WHERE {
-#     ?dimensionu a qb:DimensionProperty .
-#     ?dimensionu rdfs:label|skos:prefLabel ?dimension .
-#     OPTIONAL {
-#     ?obs a qb:Observation .
-#     ?obs ?dimensionu ?codeu .
-#     ?codeu rdfs:label|skos:prefLabel ?code .
-#     }
-#     OPTIONAL {
-#     ?dimensionu qb:codeList ?codelist .
-#     ?codelist skos:hasTopConcept ?codeu .
-#     ?codeu rdfs:label|skos:prefLabel ?code . }
-#     }
-#     LIMIT 1000
-# """
-
+# Encapsulate all crappy SPARQLWrapper call code
 @timeout(70)
 def query_endpoint(endpoint_url, query):
     endpoint_results = None
@@ -179,7 +158,8 @@ for endpoint in datahub_results:
     db.dimensions.save(document_entry)
 
 
-    # New crap, DSDs
+    # New crap, DSDs. Eventually we'll do everything with one SPARQL query
+    # For now store old dimension-code in db.dimensions and DSDs in db.dsds
     print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query_dsd)
@@ -219,7 +199,7 @@ for endpoint in datahub_results:
     endpoint_uri = endpoint["url"]
     for key, value in dsds_components.iteritems():
         document_entry = {}
-        dsd_entry = None
+        dsd_entry = {}
         dsd_uri = key
         components_entry = []
         for component in value:
