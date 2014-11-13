@@ -34,13 +34,10 @@ query = """
 
 query_dsd = """
     PREFIX qb: <http://purl.org/linked-data/cube#>
-    SELECT ?dsd ?componentValue ?p ?o
+    SELECT ?dsd ?p ?o
     WHERE {
     ?dsd a qb:DataStructureDefinition ;
-         qb:component ?component .
-    ?component ?componentType ?componentValue .
-    ?componentValue ?p ?o .
-    FILTER (?componentType IN (qb:dimension, qb:measure, qb:attribute)) 
+    qb:component [ ?p ?o ] .
     } ORDER BY ?dsd
 """
 
