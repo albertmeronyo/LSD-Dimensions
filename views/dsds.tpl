@@ -9,7 +9,7 @@
 	% for dsd in results:
 	% 	dsd_uri = dsd["dsd"]["uri"]
 	%	dsd_id = dsd["id"]
-	<dd><a href="{{dsd_id}}" target="_blank">{{dsd_uri}}</a></dd>
+	<dd><a href="{{dsd_id}}">{{dsd_uri}}</a></dd>
 	% end
 </dl>
 </div>
