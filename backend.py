@@ -92,7 +92,7 @@ def get_dsd(id):
         {"_id" : id}
         )
 
-    return template('dsd', dsd_uri=dsd_uri, dsd_results=dsd_results)
+    return template('dsd', dsd_results=dsd_results)
 
 @route('/analytics', method='GET')
 def analytics():
