@@ -13,6 +13,6 @@
 </dl>
 </div>
 
-<a href="/dimensions">Back</a>
+</div>
 
 % include('footer.tpl')
