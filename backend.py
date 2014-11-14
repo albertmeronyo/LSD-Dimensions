@@ -98,17 +98,25 @@ def get_dsd(id):
 @route('/dsds/sim', method='GET')
 def dsd_sim():
     # Get all dsds
-    dsds = db.dsds.find({})
+    dsds = db.dsds.find({}, {"_id" : 1})
     dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
     dsd_uris = {} # translate dsd_ids to dsd_uris
-    for a in dsds:
-        a_id = a["_id"]
-        dsd_uris[a_id] = a["dsd"]["uri"]
-        for b in dsds:
-            a_components = [comp["o"] for comp in a["dsd"]["components"]]
-            b_id = b["_id"]
-            b_components = [comp["o"] for comp in b["dsd"]["components"]]
-            dsd_distances[(a_id,b_id)] = distance.jaccard(a_components, b_components)
+
+    for pair in itertools.combinations(dsds):
+        a = db.dsds.find({"_id" : pair[0]})
+        b = db.dsds.find({"_id" : pair[1]})
+        a_components = [comp["o"] for comp in a["dsd"]["components"]]
+        b_components = [comp["o"] for comp in b["dsd"]["components"]]
+        dsd_distances[(pair[0],pair[1])] = distance.jaccard(a_components, b_components)
+
+ #   for a in dsds:
+ #       a_id = a["_id"]
+ #       dsd_uris[a_id] = a["dsd"]["uri"]
+ #       for b in dsds:
+ #           a_components = [comp["o"] for comp in a["dsd"]["components"]]
+ #           b_id = b["_id"]
+ #           b_components = [comp["o"] for comp in b["dsd"]["components"]]
+ #           dsd_distances[(a_id,b_id)] = distance.jaccard(a_components, b_components)
 
     return template('dsd-sim', dist=dsd_distances, dsd_uris=dsd_uris)
 
