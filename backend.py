@@ -80,30 +80,13 @@ def dsds():
     dsds = db.dsds.find(
         {},
         {"_id" : 1, "dsd.uri" : 1}
-        )
-    # Local results json serialization -- dont do this at every request!
-    local_json = []    
-    for result in dsds:
-        local_json.append({"id" : result["_id"],
-                           "uri" : result["dsd"]["uri"]
-                           })
-    with open('dsd_data.json', 'w') as outfile:
-        json.dump(local_json, outfile)
-
+        )    
     num_dsds = db.dsds.count()
-    dsds.rewind()
 
     return template('dsds', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
 
 @route('/dsds/:id', method='GET')
 def get_dsd(id):
-    # TODO: avoid this lazy load on demand
-    local_json = None
-    with open('dsd_data.json', 'r') as infile:
-        local_json = json.load(infile)
-    for dsd in local_json:
-        if int(dsd['id']) == int(id):
-            dsd_uri = dsd['uri']
     # Search for all we got about dsd_uri
     dsd_results = db.dsds.find(
         {"dsd.uri" : dsd_uri}
