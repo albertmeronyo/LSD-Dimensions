@@ -91,6 +91,8 @@ def get_dsd(id):
     dsd_results = db.dsds.find(
         {"_id" : ObjectId(id)}
         )
+    for foo in dsd_results:
+        print foo
 
     return template('dsd', dsd_results=dsd_results)
 
