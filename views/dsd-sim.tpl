@@ -7,18 +7,18 @@
 <table class="table table-hover tabe-condensed">
 
 <tr>
-  <td>Component A</td>
-  <td>Component B</td>
+  <td>DSD A</td>
+  <td>DSD B</td>
   <td>Distance</td>
 </tr>
 % for key, value in dist.iteritems():
-%   component_a = key[0]
-%   component_b = key[1]
+%   dsd_a = key[0]
+%   dsd_b = key[1]
 %   distance = value
 %   if distance < 1.0 :
 <tr>
-  <td><a href="{{component_a}}" target="_blank">{{component_a}}</a></td>
-  <td><a href="{{component_b}}" target="_blank">{{component_b}}</a></td>
+  <td><a href="{{dsd_a}}" target="_blank">{{dsd_a}}</a></td>
+  <td><a href="{{dsd_b}}" target="_blank">{{dsd_b}}</a></td>
   <td>{{distance}}</td>
 </tr>
 %   end
