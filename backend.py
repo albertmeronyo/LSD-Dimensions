@@ -92,6 +92,7 @@ def get_dsd(id):
         {"_id" : id}
         )
 
+    print dsd_results
     return template('dsd', dsd_results=dsd_results)
 
 @route('/analytics', method='GET')
