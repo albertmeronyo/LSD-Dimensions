@@ -1,7 +1,6 @@
 # Querying DSDs
 
 PREFIX qb: <http://purl.org/linked-data/cube#>
-
 SELECT ?dsd ?componentValue ?p ?o
 WHERE {
 ?dsd a qb:DataStructureDefinition ;
@@ -11,6 +10,15 @@ WHERE {
 FILTER (?componentType IN (qb:dimension, qb:measure, qb:attribute)) 
 } ORDER BY ?dsd
 
+# Alternative
+
+PREFIX qb: <http://purl.org/linked-data/cube#>
+SELECT ?dsd ?component ?p ?o
+WHERE {
+?dsd a qb:DataStructureDefinition ;
+  qb:component ?component .
+?component ?p ?o .
+} ORDER BY ?dsd
 
 # Old
 
