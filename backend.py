@@ -100,15 +100,17 @@ def dsd_sim():
     # Get all dsds
     dsds = db.dsds.find({})
     dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
+    dsd_uris = {} # translate dsd_ids to dsd_uris
     for a in dsds:
+        a_id = a["_id"]
+        dsd_uris[a_id] = a["dsd"]["uri"]
         for b in dsds:
-            a_uri = a["dsd"]["uri"]
             a_components = [comp["o"] for comp in a["dsd"]["components"]]
-            b_uri = b["dsd"]["uri"]
+            b_id = b["_id"]
             b_components = [comp["o"] for comp in b["dsd"]["components"]]
-            dsd_distances[(a_uri,b_uri)] = distance.jaccard(a_components, b_components)
+            dsd_distances[(a_id,b_id)] = distance.jaccard(a_components, b_components)
 
-    return template('dsd-sim', dist=dsd_distances)
+    return template('dsd-sim', dist=dsd_distances, dsd_uris=dsd_uris)
 
 @route('/analytics', method='GET')
 def analytics():

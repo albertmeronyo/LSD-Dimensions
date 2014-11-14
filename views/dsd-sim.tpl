@@ -12,13 +12,15 @@
   <td>Distance</td>
 </tr>
 % for key, value in dist.iteritems():
-%   dsd_a = key[0]
-%   dsd_b = key[1]
+%   dsd_a_id = key[0]
+%   dsd_b_id = key[1]
+%   dsd_a_uri = dsd_uris[dsd_a_id]
+%   dsd_b_uri = dsd_uris[dsd_b_id]
 %   distance = value
 %   if distance < 1.0 :
 <tr>
-  <td><a href="{{dsd_a}}" target="_blank">{{dsd_a}}</a></td>
-  <td><a href="{{dsd_b}}" target="_blank">{{dsd_b}}</a></td>
+  <td><a href="/dsds/{{dsd_a_id}}" target="_blank">{{dsd_a_uri}}</a></td>
+  <td><a href="/dsds/{{dsd_b_id}}" target="_blank">{{dsd_b_uri}}</a></td>
   <td>{{distance}}</td>
 </tr>
 %   end
