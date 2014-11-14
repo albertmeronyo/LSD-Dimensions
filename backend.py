@@ -74,6 +74,16 @@ def get_dimension(id):
 def about():
     return template('about')
 
+@route('/dsds', method='GET')
+def dsds():
+    num_endpoints = db.dimensions.count()
+    dsds = db.dsds.find([
+        {},
+        {"_id" : 0, "dsd.uri" : 1})
+        ])
+
+    return template('dsds', num_endpoints=num_endpoints, results=dsds)
+
 @route('/analytics', method='GET')
 def analytics():
     # TODO: avoid this lazy load on demand

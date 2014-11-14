@@ -70,6 +70,10 @@
 % else:
 	    <li><a href="/about">About</a></li>
 % end
+% if page == 'dsds':
+      <li class="active"><a href="/dsds">DSDs</a></li>
+% else:
+      <li><a href="/dsds">DSDs</a></li>
 % if page == 'analytics':
 	    <li class="active"><a href="/analytics">Analytics</a></li>
 % else:
