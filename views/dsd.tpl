@@ -8,18 +8,18 @@
 <table class="table table-hover tabe-condensed">
 
 <tr>
-  <td class="text-left">Component</td>
-  <td class="text-left">Property</td>
-  <td class="text-left">Value</td>
+  <td>Component</td>
+  <td>Property</td>
+  <td>Value</td>
 </tr>
 % for prop in dsd_results["dsd"]["components"]:
 %   component = prop["s"]
 %   property = prop["p"]
 %   value = prop["o"]
 <tr>
-  <td class="text-left">{{component}}</td>
-  <td class="text-left">{{property}}</td>
-  <td class="text-left">{{value}}</td>
+  <td>{{component}}</td>
+  <td>{{property}}</td>
+  <td>{{value}}</td>
 </tr>
 % end
 </table>
