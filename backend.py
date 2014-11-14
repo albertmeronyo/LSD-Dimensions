@@ -88,6 +88,7 @@ def dsds():
         local_json.append({"id" : dsd_id,
                            "uri" : result["dsd"]["uri"]
                            })
+        result["dsd"]["id"] = dsd_id
         dsd_id += 1
     with open('dsd_data.json', 'w') as outfile:
         json.dump(local_json, outfile)

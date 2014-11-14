@@ -8,7 +8,8 @@
 	<dt>Data Structure Definitions (DSDs)</dt>
 	% for dsd in results:
 	% 	dsd_uri = dsd["dsd"]["uri"]
-	<dd><a href="{{dsd_uri}}" target="_blank">{{dsd_uri}}</a></dd>
+	%	dsd_id = dsd["id"]
+	<dd><a href="{{dsd_id}}" target="_blank">{{dsd_uri}}</a></dd>
 	% end
 </dl>
 </div>
