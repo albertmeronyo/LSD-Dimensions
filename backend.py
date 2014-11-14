@@ -10,7 +10,7 @@ import traceback
 import os
 import json
 from pymongo import Connection
-from bson.son import SON
+from bson.objectid import ObjectId
 
 __VERSION = 0.1
 
