@@ -79,18 +79,14 @@ def dsds():
     num_endpoints = db.dimensions.count()
     dsds = db.dsds.find(
         {},
-        {"_id" : 0, "dsd.uri" : 1}
+        {"_id" : 1, "dsd.uri" : 1}
         )
     # Local results json serialization -- dont do this at every request!
-    local_json = []
-    dsd_id = 0
+    local_json = []    
     for result in dsds:
-        local_json.append({"id" : dsd_id,
+        local_json.append({"id" : result["_id"],
                            "uri" : result["dsd"]["uri"]
                            })
-        result["dsd"]["id"] = dsd_id
-        dsd_id += 1
-    print dsds
     with open('dsd_data.json', 'w') as outfile:
         json.dump(local_json, outfile)
 
