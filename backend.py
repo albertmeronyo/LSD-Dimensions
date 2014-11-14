@@ -44,6 +44,7 @@ def lsd_dimensions():
     with open('data.json', 'w') as outfile:
         json.dump(local_json, outfile)
     num_endpoints = db.dimensions.count()
+
     return template('lsd-dimensions', results=dims, num_endpoints=num_endpoints)
 
 @route('/dimensions/:id', method='GET')
@@ -66,8 +67,8 @@ def get_dimension(id):
         {"$match" : {"dimensions.uri" : dimension_uri}}, 
         {"$group" : {"_id" : {"uri" : "$dimensions.codes.uri", "label" : "$dimensions.codes.label"}}}
     ])
-    return template('dimension', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
+    return template('dimension', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
 @route('/about', method='GET')
 def about():
