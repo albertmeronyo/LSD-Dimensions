@@ -7,7 +7,7 @@
 <div class="container">
 <dl class="dl-horizontal">
 	<dt>Data Structure Definitions (DSDs)</dt>
-	% for dsd in results["result"]
+	% for dsd in results["result"]:
 	% 	dsd_uri = dsd["dsd"]["uri"]
 	<dd><a href="{{dsd_uri}}" target="_blank">{{dsd_uri}}</a></dd>
 	% end
