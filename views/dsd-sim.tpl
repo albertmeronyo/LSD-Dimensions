@@ -1,6 +1,5 @@
 % include('header.tpl', page='dsds')
 
-% dsd_uri = dsd_results["dsd"]["uri"]
 <h2>Distances between all DSDs permutations</a></h2>
 
 <div class="container">
