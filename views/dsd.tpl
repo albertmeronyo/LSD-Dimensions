@@ -5,21 +5,21 @@
 
 <div class="container">
 
-<table class="table table-hover">
+<table class="table table-hover tabe-condensed">
 
 <tr>
-  <td>Component</td>
-  <td>Property</td>
-  <td>Value</td>
+  <td class="text-left">Component</td>
+  <td class="text-left">Property</td>
+  <td class="text-left">Value</td>
 </tr>
 % for prop in dsd_results["dsd"]["components"]:
 %   component = prop["s"]
 %   property = prop["p"]
 %   value = prop["o"]
 <tr>
-  <td>{{component}}</td>
-  <td>{{property}}</td>
-  <td>{{value}}</td>
+  <td class="text-left">{{component}}</td>
+  <td class="text-left">{{property}}</td>
+  <td class="text-left">{{value}}</td>
 </tr>
 % end
 </table>
