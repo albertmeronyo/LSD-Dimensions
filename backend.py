@@ -12,6 +12,7 @@ import json
 from pymongo import Connection
 from bson.objectid import ObjectId
 import distance
+import itertools
 
 __VERSION = 0.1
 
