@@ -93,6 +93,7 @@ def dsds():
         json.dump(local_json, outfile)
 
     num_dsds = db.dsds.count()
+    dsds.rewind()
 
     return template('dsds', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
 
