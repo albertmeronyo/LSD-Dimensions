@@ -103,7 +103,7 @@ def dsd_sim():
     dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
     dsd_uris = {} # translate dsd_ids to dsd_uris
 
-    for pair in itertools.combinations(dsds):
+    for pair in itertools.combinations(dsds, 2):
         a = db.dsds.find({"_id" : pair[0]})
         b = db.dsds.find({"_id" : pair[1]})
         a_components = [comp["o"] for comp in a["dsd"]["components"]]
