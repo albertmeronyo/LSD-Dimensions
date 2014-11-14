@@ -1,7 +1,6 @@
 % include('header.tpl', page='dsds')
 
 <div class="container" style="margin: 20px auto;">
-%  num_dsds = len(results)
 <p class="lead" style="margin-bottom: 50px">Counting <b>{{num_dsds}}</b> Data Structure Definitions in <b>{{num_endpoints}}</b> SPARQL endpoints in Linked Statistical Data</p>
 
 <div class="container">

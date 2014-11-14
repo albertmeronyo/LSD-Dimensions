@@ -81,8 +81,9 @@ def dsds():
         {},
         {"_id" : 0, "dsd.uri" : 1}
         )
+    num_dsds = db.dsds.count()
 
-    return template('dsds', num_endpoints=num_endpoints, results=dsds)
+    return template('dsds', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
 
 @route('/analytics', method='GET')
 def analytics():
