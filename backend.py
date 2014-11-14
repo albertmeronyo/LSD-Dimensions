@@ -99,15 +99,13 @@ def get_dsd(id):
 @route('/dsds/sim', method='GET')
 def dsd_sim():
     # Get all dsds
-    dsds = db.dsds.find({}, {"_id" : 1})
+    dsds = db.dsds.find({})
     dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
     dsd_uris = {} # translate dsd_ids to dsd_uris
 
     for pair in itertools.combinations(dsds, 2):
-        a = db.dsds.find_one({"_id" : pair[0]["_id"]})
-        b = db.dsds.find_one({"_id" : pair[1]["_id"]})
-        a_components = [comp["o"] for comp in a["dsd"]["components"]]
-        b_components = [comp["o"] for comp in b["dsd"]["components"]]
+        a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
+        b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
         dsd_distances[(pair[0]["_id"],pair[1]["_id"])] = distance.jaccard(a_components, b_components)
 
  #   for a in dsds:
