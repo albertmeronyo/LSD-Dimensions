@@ -11,6 +11,7 @@ import os
 import json
 from pymongo import Connection
 from bson.objectid import ObjectId
+import distance
 
 __VERSION = 0.1
 
@@ -93,6 +94,21 @@ def get_dsd(id):
         )
 
     return template('dsd', dsd_results=dsd_results)
+
+@route('/dsds/sim', method='GET')
+def dsd_sim():
+    # Get all dsds
+    dsds = db.dsds.find({})
+    dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
+    for a in dsds:
+        for b in dsds:
+            a_uri = a["dsd"]["uri"]
+            a_components = [comp["o"] for comp in a["dsd"]["components"]]
+            b_uri = b["dsd"]["uri"]
+            b_components = [comp["o"] for comp in b["dsd"]["components"]]
+            dsd_distances[(a_uri,b_uri)] = distance.jaccard(a_components, b_components)
+
+    return template('dsd-sim', dist=dsd_distances)
 
 @route('/analytics', method='GET')
 def analytics():
