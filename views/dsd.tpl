@@ -1,6 +1,6 @@
 % include('header.tpl', page='dsds')
 
-% dsd_uri = dsd_results["dsd"]["uri"]
+% dsd_uri = dsd_results["dsd.uri"]
 <h2>Details for Data Structure Definition <a href="{{dsd_uri}}" target="_blank">{{dsd_uri}}</a></h2>
 
 <div class="container">
