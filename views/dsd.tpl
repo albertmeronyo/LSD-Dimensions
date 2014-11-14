@@ -12,10 +12,10 @@
   <td>Property</td>
   <td>Value</td>
 </tr>
-% for prop in dsd_results:
-%   component = prop["dsd"]["components"]["s"]
-%   property = prop["dsd"]["components"]["p"]
-%   value = prop["dsd"]["components"]["o"]
+% for prop in dsd_results["dsd"]["components"]:
+%   component = prop["s"]
+%   property = prop["p"]
+%   value = prop["o"]
 <tr>
   <td>{{component}}</td>
   <td>{{property}}</td>
