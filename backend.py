@@ -90,6 +90,7 @@ def dsds():
                            })
         result["dsd"]["id"] = dsd_id
         dsd_id += 1
+    print dsds
     with open('dsd_data.json', 'w') as outfile:
         json.dump(local_json, outfile)
 
