@@ -74,6 +74,7 @@
       <li class="active"><a href="/dsds">DSDs</a></li>
 % else:
       <li><a href="/dsds">DSDs</a></li>
+% end
 % if page == 'analytics':
 	    <li class="active"><a href="/analytics">Analytics</a></li>
 % else:
