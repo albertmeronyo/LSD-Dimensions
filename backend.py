@@ -107,6 +107,8 @@ def dsd_sim():
         a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
         b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
         dsd_distances[(pair[0]["_id"],pair[1]["_id"])] = distance.jaccard(a_components, b_components)
+        dsd_uris[pair[0]["_id"]] = pair[0]["dsd"]["uri"]
+        dsd_uris[pair[1]["_id"]] = pair[1]["dsd"]["uri"]
 
  #   for a in dsds:
  #       a_id = a["_id"]
