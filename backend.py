@@ -105,9 +105,6 @@ def dsd_sim():
 
     for pair in itertools.combinations(dsds, 2):
         a = db.dsds.find_one({"_id" : pair[0]["_id"]})
-        print pair[0]["_id"]
-        for foo in a:
-            print foo
         b = db.dsds.find_one({"_id" : pair[1]["_id"]})
         a_components = [comp["o"] for comp in a["dsd"]["components"]]
         b_components = [comp["o"] for comp in b["dsd"]["components"]]
