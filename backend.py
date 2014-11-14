@@ -81,9 +81,36 @@ def dsds():
         {},
         {"_id" : 0, "dsd.uri" : 1}
         )
+    # Local results json serialization -- dont do this at every request!
+    local_json = []
+    dsd_id = 0
+    for result in dsds:
+        local_json.append({"id" : dsd_id,
+                           "uri" : result["dsd"]["uri"]
+                           })
+        dsd_id += 1
+    with open('dsd_data.json', 'w') as outfile:
+        json.dump(local_json, outfile)
+
     num_dsds = db.dsds.count()
 
     return template('dsds', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
+
+@route('/dsds/:id', method='GET')
+def get_dsd(id):
+    # TODO: avoid this lazy load on demand
+    local_json = None
+    with open('dsd_data.json', 'r') as infile:
+        local_json = json.load(infile)
+    for dsd in local_json:
+        if int(dsd['id']) == int(id):
+            dsd_uri = dsd['uri']
+    # Search for all we got about dsd_uri
+    dsd_results = db.dsds.find(
+        {"dsd.uri" : dsd_uri}
+        )
+
+    return template('dsd', dsd_uri=dsd_uri, dsd_results=dsd_results)
 
 @route('/analytics', method='GET')
 def analytics():
@@ -125,6 +152,10 @@ def analytics():
 @route('/data.json')
 def data():
     return static_file('data.json', root='./')
+
+@route('/dsd_data.json')
+def data():
+    return static_file('dsd_data.json', root='./')
 
 @route('/js/<filename:re:.*\.js>')
 def javascripts(filename):
