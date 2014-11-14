@@ -89,7 +89,7 @@ def dsds():
 def get_dsd(id):
     # Search for all we got about dsd_uri
     dsd_results = db.dsds.find(
-        {"dsd.uri" : dsd_uri}
+        {"_id" : int(id)}
         )
 
     return template('dsd', dsd_uri=dsd_uri, dsd_results=dsd_results)
