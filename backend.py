@@ -104,10 +104,10 @@ def dsd_sim():
     dsd_uris = {} # translate dsd_ids to dsd_uris
 
     for pair in itertools.combinations(dsds, 2):
-        a = db.dsds.find({"_id" : pair[0]})
-        b = db.dsds.find({"_id" : pair[1]})
-        a_components = [comp["o"] for comp in a["dsd"]["components"]]
-        b_components = [comp["o"] for comp in b["dsd"]["components"]]
+        a = db.dsds.find_one({"_id" : pair[0]})
+        b = db.dsds.find_one({"_id" : pair[1]})
+        a_components = [comp["o"] for comp in a["components"]]
+        b_components = [comp["o"] for comp in b["components"]]
         dsd_distances[(pair[0],pair[1])] = distance.jaccard(a_components, b_components)
 
  #   for a in dsds:
