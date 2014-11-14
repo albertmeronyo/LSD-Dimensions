@@ -88,7 +88,7 @@ def dsds():
 @route('/dsds/:id', method='GET')
 def get_dsd(id):
     # Search for all we got about dsd_uri
-    dsd_results = db.dsds.find(
+    dsd_results = db.dsds.find_one(
         {"_id" : ObjectId(id)}
         )
     for foo in dsd_results:
