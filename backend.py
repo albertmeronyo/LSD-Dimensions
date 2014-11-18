@@ -13,6 +13,7 @@ from pymongo import Connection
 from bson.objectid import ObjectId
 import distance
 import itertools
+import csv
 
 __VERSION = 0.1
 
@@ -103,12 +104,16 @@ def dsd_sim():
     dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
     dsd_uris = {} # translate dsd_ids to dsd_uris
 
-    for pair in itertools.combinations(dsds, 2):
-        a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
-        b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
-        dsd_distances[(pair[0]["_id"],pair[1]["_id"])] = distance.jaccard(a_components, b_components)
-        dsd_uris[pair[0]["_id"]] = pair[0]["dsd"]["uri"]
-        dsd_uris[pair[1]["_id"]] = pair[1]["dsd"]["uri"]
+    with open('sims.csv', 'wb') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
+        csvwriter.writerow(["datasetX", "datasetY", "similarity"])
+        for pair in itertools.combinations(dsds, 2):
+            a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
+            b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
+            dsd_distances[(pair[0]["_id"],pair[1]["_id"])] = distance.jaccard(a_components, b_components)
+            dsd_uris[pair[0]["_id"]] = pair[0]["dsd"]["uri"]
+            dsd_uris[pair[1]["_id"]] = pair[1]["dsd"]["uri"]
+            csvwriter.writerow([dsd_uris[pair[0]["_id"]], dsd_uris[pair[1]["_id"]], dsd_distances[(pair[0]["_id"],pair[1]["_id"])]])
 
  #   for a in dsds:
  #       a_id = a["_id"]
