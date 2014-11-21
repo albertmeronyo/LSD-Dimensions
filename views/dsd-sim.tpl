@@ -1,30 +1,18 @@
 % include('header.tpl', page='dsds')
 
-<h2>Distances between all DSDs permutations (omitting 1.0)</a></h2>
+<h2>Distances between all DSDs combinations (omitting 1.0)</a></h2>
 
 <div class="container">
 
-<table class="table table-hover tabe-condensed">
 
-<tr>
-  <td>DSD A</td>
-  <td>DSD B</td>
-  <td>Distance</td>
-</tr>
-% for key, value in dist.iteritems():
-%   dsd_a_id = key[0]
-%   dsd_b_id = key[1]
-%   dsd_a_uri = dsd_uris[dsd_a_id]
-%   dsd_b_uri = dsd_uris[dsd_b_id]
-%   distance = value
-%   if distance < 1.0 :
-<tr>
-  <td><a href="/dsds/{{dsd_a_id}}" target="_blank">{{dsd_a_uri}}</a></td>
-  <td><a href="/dsds/{{dsd_b_id}}" target="_blank">{{dsd_b_uri}}</a></td>
-  <td>{{distance}}</td>
-</tr>
-%   end
-% end
+<table id="lsd-dimensions" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="dsd_data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true" data-classes="table table-hover table-condensed table-striped" data-page-size="10">
+  <thead>
+  <tr>
+    <th data-field="uri_a" data-sortable="true" class="ui-helper-center">DSD A</th>
+    <th data-field="uri_b" data-sortable="true" class="ui-helper-center">DSD B</th>
+    <th data-field="dist" data-sortable="true" class="ui-helper-center col-md-2">Distance</th>
+  </tr>
+  </thead>
 </table>
 
 </div>

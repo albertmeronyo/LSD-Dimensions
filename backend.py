@@ -97,34 +97,37 @@ def get_dsd(id):
 
     return template('dsd', dsd_results=dsd_results)
 
-@route('/dsds/sim', method='GET')
-def dsd_sim():
+@route('/dsds/sim-load', method='GET')
+def dsd_sim_load():
     # Get all dsds
     dsds = db.dsds.find({})
-    dsd_distances = {} # keys are tuples (ObjectId, ObjectId), values are distances
-    dsd_uris = {} # translate dsd_ids to dsd_uris
+    with open('dsd_data.json', 'w') as outfile:
+        with open('dsd_data.csv', 'w') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=',',
+                                   quotechar='\"', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow(["dsd_a", "dsd_b", "distance"])
+            outfile.write("[")
+            for pair in itertools.combinations(dsds, 2):
+                a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
+                b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
+                a_uri = pair[0]["dsd"]["uri"]
+                b_uri = pair[1]["dsd"]["uri"]
+                a_id = pair[0]["_id"]
+                b_id = pair[1]["_id"]
+                dist = distance.jaccard(a_components, b_components)
+                item = {"uri_a" : "<a href='/dsds/%s'>%s</a>" % (a_id, a_uri),
+                        "uri_b" : "<a href='/dsds/%s'>%s</a>" % (b_id, b_uri),
+                        "dist" : dist}        
+                outfile.write(json.dumps(item, outfile)+",")
+                csvwriter.writerow([a_uri, b_uri, dist])
+            outfile.write("]")
 
-    with open('sims.csv', 'wb') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-        csvwriter.writerow(["datasetX", "datasetY", "similarity"])
-        for pair in itertools.combinations(dsds, 2):
-            a_components = [comp["o"] for comp in pair[0]["dsd"]["components"]]
-            b_components = [comp["o"] for comp in pair[1]["dsd"]["components"]]
-            dsd_distances[(pair[0]["_id"],pair[1]["_id"])] = distance.jaccard(a_components, b_components)
-            dsd_uris[pair[0]["_id"]] = pair[0]["dsd"]["uri"]
-            dsd_uris[pair[1]["_id"]] = pair[1]["dsd"]["uri"]
-            csvwriter.writerow([dsd_uris[pair[0]["_id"]], dsd_uris[pair[1]["_id"]], dsd_distances[(pair[0]["_id"],pair[1]["_id"])]])
+    return "OK"
 
- #   for a in dsds:
- #       a_id = a["_id"]
- #       dsd_uris[a_id] = a["dsd"]["uri"]
- #       for b in dsds:
- #           a_components = [comp["o"] for comp in a["dsd"]["components"]]
- #           b_id = b["_id"]
- #           b_components = [comp["o"] for comp in b["dsd"]["components"]]
- #           dsd_distances[(a_id,b_id)] = distance.jaccard(a_components, b_components)
-
-    return template('dsd-sim', dist=dsd_distances, dsd_uris=dsd_uris)
+@route('/dsds/sim', method='GET')
+def dsd_sim():
+    # load json
+    return template('dsd-sim')
 
 @route('/analytics', method='GET')
 def analytics():
