@@ -215,6 +215,8 @@ for endpoint in datahub_results:
             if dsd_uri not in dsds_obscounts:
                 dsds_obscounts[dsd_uri] = {}
             dsds_obscounts[dsd_uri]["count_slice"] = count_slice
+
+        print dsds_obscounts
     except AttributeError:
         print "The endpoint did not return JSON"
         pass
@@ -278,10 +280,13 @@ for endpoint in datahub_results:
             dsd_entry["uri"] = dsd_uri
             dsd_entry["components"] = components_entry
         else:
-            if key and dsds_components[key] and dsds_obscounts[key]:
-                obs_ds = dsds_obscounts[key]["count_ds"]
-                obs_slice = dsds_obscounts[key]["count_slice"]
-                dsd_entry.append({"uri" : dsd_uri, "count_ds" : obs_ds, "count_slice" : obs_slice})
+            if key and dsds_components[key]:
+                if dsds_obscounts[key]:
+                    obs_ds = dsds_obscounts[key]["count_ds"]
+                    obs_slice = dsds_obscounts[key]["count_slice"]
+                    dsd_entry.append({"uri" : dsd_uri, "count_ds" : obs_ds, "count_slice" : obs_slice})
+                else:
+                    dsd_entry.append({"uri" : dsd_uri, "count_ds" : 'NA', "count_slice" : 'NA'})
         document_entry["endpoint"] = endpoint_uri
         if dsd_entry:
             document_entry["dsd"] = dsd_entry
