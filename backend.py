@@ -171,8 +171,12 @@ def data():
     return static_file('data.json', root='./')
 
 @route('/dsd_data.json')
-def data():
+def dsd_data():
     return static_file('dsd_data.json', root='./')
+
+@route('/dsd_data.csv.gz')
+def dsd_gz_data():
+    return static_file('dsd_data.csv.gz', root='./')
 
 @route('/js/<filename:re:.*\.js>')
 def javascripts(filename):
