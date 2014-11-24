@@ -1,3 +1,22 @@
+# Counting observations (1) by dataset
+
+prefix qb: <http://purl.org/linked-data/cube#>
+select ?dsd (count(distinct(?obs)) as ?count) where {
+  ?obs qb:dataSet ?ds .
+  ?ds qb:structure ?dsd .
+  ?obs a qb:Observation .
+} group by ?dsd
+
+# Counting observations (2) by slice
+
+prefix qb: <http://purl.org/linked-data/cube#>
+select ?dsd (count(distinct?obs) as ?obs_count) where {
+  ?ds a qb:DataSet .
+  ?ds qb:structure ?dsd .
+  ?ds qb:slice ?slice .
+  ?slice qb:observation ?obs .
+} group by ?dsd
+
 # Querying DSDs
 
 PREFIX qb: <http://purl.org/linked-data/cube#>
