@@ -43,6 +43,25 @@ query_dsd = """
     } ORDER BY ?dsd
 """
 
+query_obscount_a = """
+prefix qb: <http://purl.org/linked-data/cube#>
+select ?dsd (count(distinct(?obs)) as ?count) where {
+  ?obs qb:dataSet ?ds .
+  ?ds qb:structure ?dsd .
+  ?obs a qb:Observation .
+} group by ?dsd
+"""
+
+query_obscount_b = """
+prefix qb: <http://purl.org/linked-data/cube#>
+select ?dsd (count(distinct?obs) as ?count) where {
+  ?ds a qb:DataSet .
+  ?ds qb:structure ?dsd .
+  ?ds qb:slice ?slice .
+  ?slice qb:observation ?obs .
+} group by ?dsd
+"""
+
 # Encapsulate all crappy SPARQLWrapper call code
 @timeout(70)
 def query_endpoint(endpoint_url, query):
@@ -158,10 +177,57 @@ for endpoint in datahub_results:
         document_entry["dimensions"] = dimensions_entry
     db.dimensions.save(document_entry)
 
+    # New crap, counting observations.
+    # Class this code properly!!!
+    # print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
+    try:
+        endpoint_results_a = query_endpoint(endpoint["url"], query_obscount_a)
+        endpoint_results_b = query_endpoint(endpoint["url"], query_obscount_b)
+    except TimeoutError:
+        print "Endpoint timeout"
+        pass
+    except ValueError:
+        print "Endpoint and query combination are malformed"
+        pass
+    try:        
+        dsds_obscounts = {}
+
+        # By dataset
+        for result in endpoint_results_a["results"]["bindings"]:
+            dsd_uri = None
+            count_ds = 0
+            if 'dsd' in result and 'value' in result['dsd']:
+                dsd_uri = result["dsd"]["value"]
+            if 'count' in result and 'value' in result['count']:
+                count_ds = result["count"]["value"] 
+            if dsd_uri not in dsds_obscounts:
+                dsds_obscounts[dsd_uri] = {}
+            dsds_obscounts[dsd_uri]["count_ds"] = count_ds
+
+        # By slice
+        for result in endpoint_results_b["results"]["bindings"]:
+            dsd_uri = None
+            count_slice = 0
+            if 'dsd' in result and 'value' in result['dsd']:
+                dsd_uri = result["dsd"]["value"]
+            if 'count' in result and 'value' in result['count']:
+                count_slice = result["count"]["value"] 
+            if dsd_uri not in dsds_obscounts:
+                dsds_obscounts[dsd_uri] = {}
+            dsds_obscounts[dsd_uri]["count_slice"] = count_slice
+    except AttributeError:
+        print "The endpoint did not return JSON"
+        pass
+    except TypeError:
+        print "The endpoint did not return valid JSON"
+        pass
+    except KeyError:
+        print "The endpoint returned an empty response"
+        pass
 
     # New crap, DSDs. Eventually we'll do everything with one SPARQL query
     # For now store old dimension-code in db.dimensions and DSDs in db.dsds
-    print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
+    # print "QUERYING ENDPOINT %s / %s" % (current_endpoint, num_endpoints)
     try:
         endpoint_results = query_endpoint(endpoint["url"], query_dsd)
     except TimeoutError:
@@ -212,12 +278,15 @@ for endpoint in datahub_results:
             dsd_entry["uri"] = dsd_uri
             dsd_entry["components"] = components_entry
         else:
-            if key and dsds_components[key]:
-                dsd_entry.append({"uri" : dsd_uri})
+            if key and dsds_components[key] and dsds_obscounts[key]:
+                obs_ds = dsds_obscounts[key]["count_ds"]
+                obs_slice = dsds_obscounts[key]["count_slice"]
+                dsd_entry.append({"uri" : dsd_uri, "count_ds" : obs_ds, "count_slice" : obs_slice})
         document_entry["endpoint"] = endpoint_uri
         if dsd_entry:
             document_entry["dsd"] = dsd_entry
         db.dsds.save(document_entry)
+
     current_endpoint += 1
 
 if db.dimensions.count() > 500 and db.dsds.count() > 1000:
