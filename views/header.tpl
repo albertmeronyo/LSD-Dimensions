@@ -91,6 +91,6 @@
 
       <div class="starter-template">
 
-	<h1>LSD Dimensions</h1>
+	<center><a href="/dimensions"><img src="img/lsd-logo.png"></a></center>
 
 
