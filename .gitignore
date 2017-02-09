@@ -3,3 +3,11 @@
 *.pyc
 .*!.gitignore
 data.json
+bin/
+dimensions.json
+foo.json
+include/
+lib/
+local/
+pip-selfcheck.json
+share/
