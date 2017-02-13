@@ -1,56 +1,38 @@
-from bottle import route, run, template, request, static_file, abort
-from pymongo import Connection
-from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
-from bson.son import SON
-import urllib
+from flask import Flask, render_template
+import requests
 import logging
-import glob
 import sys
-import traceback
-import os
 import json
-from pymongo import Connection
-from bson.objectid import ObjectId
 import distance
 import itertools
 import csv
+from rdflib import Graph
 
-__VERSION = 0.1
+# lsd modules
+import static
 
-connection = Connection('localhost', 27017)
-db = connection.lsddimensionsprod
+app = Flask(__name__)
 
-@route('/version')
-def version():
-    return "Version " + str(__VERSION)
+# Set logging format
+logging.basicConfig(level=logging.DEBUG, format=static.LOG_FORMAT)
+app.debug_log_format = static.LOG_FORMAT
+lodlogger = logging.getLogger(__name__)
 
-@route('/')
-@route('/dimensions')
+@app.route("/")
+@app.route("/dimensions")
 def lsd_dimensions():
-    dims = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"},
-        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}, 
-                    "dimensionsCount" : {"$sum" : 1}}},
-        {"$sort": SON([("dimensionsCount", -1)])}
-    ])
-    # Local results json serialization -- dont do this at every request!
-    local_json = []
-    dimension_id = 0
-    for result in dims["result"]:
-        local_json.append({"id" : dimension_id,
-                           "view" : "<a href='/dimensions/%s'><img src='/img/eye.png' alt='Details'></a>" % dimension_id,
-                           "uri" : result["_id"]["uri"],
-                           "label" : result["_id"]["label"],
-                           "refs" : result["dimensionsCount"]
-                           })
-        dimension_id += 1
-    with open('data.json', 'w') as outfile:
-        json.dump(local_json, outfile)
-    num_endpoints = db.dimensions.count()
+    lodlogger.debug("Querying store on all dimensions")
+    params = {'query' : static.DIMENSIONS_LOCAL_QUERY}
+    headers = {'Accept' : static.mimetypes['json']}
+    dims = requests.get(static.ENDPOINT, params=params, headers=headers).json()
+    lodlogger.debug("Querying store on all endpoints")
+    params = {'query' : static.NUM_ENDPOINTS_LOCAL_QUERY}
+    headers = {'Accept' : static.mimetypes['json']}
+    num_endpoints = requests.get(static.ENDPOINT, params=params, headers=headers).json()
 
-    return template('lsd-dimensions', results=dims, num_endpoints=num_endpoints)
+    return render_template('lsd-dimensions.html', results=dims, num_dims=len(dims["results"]["bindings"]), num_endpoints=int(num_endpoints["results"]["bindings"][0]["num_endpoints"]["value"]))
 
-@route('/dimensions/:id', method='GET')
+@app.route("/dimensions/<id>", methods=["GET"])
 def get_dimension(id):
     # TODO: avoid this lazy load on demand
     local_json = None
@@ -65,39 +47,39 @@ def get_dimension(id):
         {"endpoint.url" : 1}
     ).distinct("endpoint.url")
     codes_results = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"}, 
-        {"$unwind" : "$dimensions.codes"}, 
-        {"$match" : {"dimensions.uri" : dimension_uri}}, 
+        {"$unwind" : "$dimensions"},
+        {"$unwind" : "$dimensions.codes"},
+        {"$match" : {"dimensions.uri" : dimension_uri}},
         {"$group" : {"_id" : {"uri" : "$dimensions.codes.uri", "label" : "$dimensions.codes.label"}}}
     ])
 
-    return template('dimension', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
+    return render_template('dimension.html', dim=dimension_uri, endpoints=endpoints_results, codes=codes_results)
 
-@route('/about', method='GET')
+@app.route("/about", methods=["GET"])
 def about():
-    return template('about')
+    return render_template('about.html')
 
-@route('/dsds', method='GET')
+@app.route("/dsds", methods=["GET"])
 def dsds():
     num_endpoints = db.dimensions.count()
     dsds = db.dsds.find(
         {},
         {"_id" : 1, "dsd.uri" : 1}
-        )    
+        )
     num_dsds = db.dsds.count()
 
-    return template('dsds', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
+    return render_template('dsds.html', num_endpoints=num_endpoints, results=dsds, num_dsds=num_dsds)
 
-@route('/dsds/:id', method='GET')
+@app.route('/dsds/<id>', methods=["GET"])
 def get_dsd(id):
     # Search for all we got about dsd_uri
     dsd_results = db.dsds.find_one(
         {"_id" : ObjectId(id)}
         )
 
-    return template('dsd', dsd_results=dsd_results)
+    return render_template('dsd.html', dsd_results=dsd_results)
 
-@route('/dsds/sim-load', method='GET')
+@app.route('/dsds/sim-load', methods=["GET"])
 def dsd_sim_load():
     # Get all dsds
     dsds = db.dsds.find({})
@@ -117,81 +99,54 @@ def dsd_sim_load():
                 dist = distance.jaccard(a_components, b_components)
                 item = {"uri_a" : "<a href='/dsds/%s'>%s</a>" % (a_id, a_uri),
                         "uri_b" : "<a href='/dsds/%s'>%s</a>" % (b_id, b_uri),
-                        "dist" : dist}        
+                        "dist" : dist}
                 outfile.write(json.dumps(item, outfile)+",")
                 csvwriter.writerow([a_uri, b_uri, dist])
             outfile.write("]")
 
     return "OK"
 
-@route('/dsds/sim', method='GET')
+@app.route('/dsds/sim', methods=["GET"])
 def dsd_sim():
     # load json
-    return template('dsd-sim')
+    return render_template('dsd-sim.html')
 
-@route('/analytics', method='GET')
+@app.route('/analytics', methods=["GET"])
 def analytics():
     # TODO: avoid this lazy load on demand
 
     ### 1. Dim-freq distribution
-    dims = db.dimensions.aggregate([
-        {"$unwind" : "$dimensions"},
-        {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"}, 
-                    "dimensionsCount" : {"$sum" : 1}}},
-        {"$sort": SON([("dimensionsCount", -1)])}
-    ])
+    # dims = db.dimensions.aggregate([
+    #     {"$unwind" : "$dimensions"},
+    #     {"$group": {"_id": {"uri": "$dimensions.uri", "label": "$dimensions.label"},
+    #                 "dimensionsCount" : {"$sum" : 1}}},
+    #     {"$sort": SON([("dimensionsCount", -1)])}
+    # ])
+    #
+    # freqs = [dim["dimensionsCount"] for dim in dims["result"]]
+    # dim_names = [dim["_id"]["label"] for dim in dims["result"]]
+    #
+    # dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
+    #
+    # ### 2. Endpoints using LSD dimensions
+    #
+    # num_endpoints = db.dimensions.find({"endpoint" : {"$exists" : "1"}}).count()
+    # with_dims = db.dimensions.find({"dimensions" : {"$exists" : "1"}}).count()
+    # fracs = [['With dimensions', with_dims], ['Without dimensions', num_endpoints - with_dims]]
+    #
+    # ### 3. Dimensions with and without codes
+    # total_dims = len(dims["result"])
+    # codes = db.dimensions.aggregate([
+    #     {"$match" : {"dimensions.codes.uri" : {"$exists" : 1}}},
+    #     {"$unwind" : "$dimensions"},
+    #     {"$unwind" : "$dimensions.codes"},
+    #     {"$group": {"_id" : {"duri" : "$dimensions.uri"}}}
+    # ])
+    # with_codes = len(codes["result"])
+    # fracs_codes = [['With codes', with_codes], ['Without codes', total_dims - with_codes]]
 
-    freqs = [dim["dimensionsCount"] for dim in dims["result"]]
-    dim_names = [dim["_id"]["label"] for dim in dims["result"]]
+    # return render_template('analytics.html', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs, fracs_codes=fracs_codes)
+    return render_template('analytics.html')
 
-    dims_freqs = [[dim_names[i], freqs[i]] for i in range(len(dim_names))]
-
-    ### 2. Endpoints using LSD dimensions
-
-    num_endpoints = db.dimensions.find({"endpoint" : {"$exists" : "1"}}).count()
-    with_dims = db.dimensions.find({"dimensions" : {"$exists" : "1"}}).count()
-    fracs = [['With dimensions', with_dims], ['Without dimensions', num_endpoints - with_dims]]
-
-    ### 3. Dimensions with and without codes
-    total_dims = len(dims["result"])
-    codes = db.dimensions.aggregate([
-        {"$match" : {"dimensions.codes.uri" : {"$exists" : 1}}}, 
-        {"$unwind" : "$dimensions"}, 
-        {"$unwind" : "$dimensions.codes"}, 
-        {"$group": {"_id" : {"duri" : "$dimensions.uri"}}}
-    ])
-    with_codes = len(codes["result"])
-    fracs_codes = [['With codes', with_codes], ['Without codes', total_dims - with_codes]]
-    
-    return template('analytics', dims=range(len(dim_names)), freqs=freqs, dims_freqs=dims_freqs, fracs=fracs, fracs_codes=fracs_codes)
-
-# Static Routes
-@route('/data.json')
-def data():
-    return static_file('data.json', root='./')
-
-@route('/dsd_data.json')
-def dsd_data():
-    return static_file('dsd_data.json', root='./')
-
-@route('/dsd_data.csv.gz')
-def dsd_gz_data():
-    return static_file('dsd_data.csv.gz', root='./')
-
-@route('/js/<filename:re:.*\.js>')
-def javascripts(filename):
-    return static_file(filename, root='views/js')
-
-@route('/css/<filename:re:.*\.css>')
-def stylesheets(filename):
-    return static_file(filename, root='views/css')
-
-@route('/img/<filename:re:.*\.(jpg|png|gif|ico)>')
-def images(filename):
-    return static_file(filename, root='views/img')
-
-@route('/fonts/<filename:re:.*\.(eot|ttf|woff|svg)>')
-def fonts(filename):
-    return static_file(filename, root='views/fonts')
-
-run(host = sys.argv[1], port = sys.argv[2], debug = True, reloader = True, server = 'cherrypy')
+if __name__ == '__main__':
+    app.run(host=static.DEFAULT_HOST, port=static.DEFAULT_PORT, debug=True)

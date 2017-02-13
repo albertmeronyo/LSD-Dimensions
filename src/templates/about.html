@@ -1,4 +1,4 @@
-% include('header.tpl', page='about')
+{% include 'header.html' %}
 
 <div class="container" style="margin: 20px auto;">
 
@@ -8,7 +8,7 @@
 
 <p class="text-justify"><a href="/dimensions">LSD Dimensions</a> is an aggregator of all qb:DataStructureDefinition and qb:DimensionProperty resources (and their associated triples), as defined in the <a href="http://www.w3.org/TR/vocab-data-cube/" target="_blank">RDF Data Cube vocabulary</a> (W3C recommendation for publishing statistical data on the Web), that can be currently found in the <a href="http://linkeddata.org/" target="_blank">Linked Data Cloud</a> (read: the SPARQL endpoints in <a href="http://datahub.io/" target="_blank">Datahub.io</a>). Its purpose is to improve the reusability of statistical dimensions, codes and concept schemes in the Web of Data, providing an interface for users (future work: also for programs) to search for resources commonly used to describe open statistical datasets. The gathering of all DSDs is intended for developing ways of enhancing comparability of Linked Statistical Data by leveraging semantically rich descriptions of cube components.</p>
 
-<h3>Usage</h3>
+<!-- <h3>Usage</h3>
 
 <p class="text-justify">The <a href="/dimensions">main view</a> shows the count of queried SPARQL endpoints and the number of retrieved dimensions, together with a table that displays these dimensions.<p>
 
@@ -23,7 +23,7 @@
 <ul>
 	<li><p class="text-justify"><strong>Endpoints.</strong>. The endpoints that make use of that dimension.</p>
 	<li><p class="text-justify"><strong>Codes.</strong> Popular codes that are defined (future work: also assigned) as valid values for that dimension.</p>
-</ul>
+</ul> -->
 
 <h3>Motivation</h3>
 
@@ -48,4 +48,4 @@ expectancy of males in Newport in the period 2004-2006 is 76.7 years'' has three
 	<li><p class="text-justify">Interesting data <a href="/analytics">analyses</a> on all dimensions.</p>
 </div>
 
-% include('footer.tpl')
+{% include 'footer.html' %}

@@ -1,11 +1,12 @@
-% include('header.tpl', page='analytics')
+{% include 'header.html' %}
 
 <div class="container" style="margin: 20px auto;">
 
 <h2>Analytics</h2>
 
+Will be back soon.
 
-<div class="row">
+<!-- <div class="row">
   <div class="col-md-12">
     <h3>Dimension frequency distribution</h3>
     <p class="text-center">Distribution of distinct LSD dimensions according to the frequency in which they appear in LOD datasets.</p>
@@ -17,12 +18,12 @@
       function drawChart() {
           var data = google.visualization.arrayToDataTable([
             ['Dimension', 'Frequency'],
-          % for df in dims_freqs:
+          {% for df in dims_freqs: %}
             ['{{df[0]}}', {{df[1]}}],
-          % end
+          {% endfor %}
             ['','']
           ]);
-            
+
         var options = {
           legend: 'none',
           hAxis : {textStyle : { color: '#505080',
@@ -58,9 +59,9 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Dimension usage', 'Share'],
-          % for f in fracs:
+          {% for f in fracs: %}
             ['{{f[0]}}', {{f[1]}}],
-          % end
+          {% endfor %}
             ['','']
         ]);
 
@@ -75,7 +76,7 @@
         chart.draw(data, options);
       }
     </script>
-  </div> 
+  </div>
 </div>
 
 <div class="row">
@@ -91,9 +92,9 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Dimension usage', 'Share'],
-          % for f in fracs_codes:
+          {% for f in fracs_codes: %}
             ['{{f[0]}}', {{f[1]}}],
-          % end
+          {% endfor %}
             ['','']
         ]);
 
@@ -111,9 +112,9 @@
     </script>
 
   </div>
-</div>
+</div> -->
 
 
 </div>
 
-% include('footer.tpl')
+{% include 'footer.html' %}

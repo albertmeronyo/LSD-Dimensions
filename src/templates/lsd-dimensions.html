@@ -1,0 +1,70 @@
+{% include 'header.html' %}
+
+<div class="container">
+<p class="lead">
+  Machine processable URIs for <b>{{num_dims}}</b> statistical dimensions and codelists in <b>{{num_endpoints}}</b> Linked Data sources. The HTTP API returns dimension URIs that match a query string, and codelists associated to a given dimension.
+</p>
+
+<div class="row">
+  <div class="col-xs-1">
+    <label for="query">Query string</label>
+  </div>
+  <div class="col-xs-9">
+    <input class="form-control" id="query" placeholder="Sex" value="Sex">
+  </div>
+  <div class="col-xs-2">
+    <button type="submit" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/dimensions?query='+document.getElementById('query').value;">Get dimensions</button>
+  </div>
+</div>
+
+<div class="container"></div>
+
+<div class="row">
+  <div class="col-xs-1">
+    <label for="codes">Dimension URI</label>
+  </div>
+  <div class="col-xs-9">
+    <input class="form-control" id="codes" placeholder="http://purl.org/linked-data/sdmx/2009/dimension#sex" value="http://purl.org/linked-data/sdmx/2009/dimension#sex">
+  </div>
+  <div class="col-xs-2">
+    <button type="submit" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim='+encodeURIComponent(document.getElementById('codes').value);">Get codes</button>
+  </div>
+</div>
+
+<h2>API calls</h2>
+<p>Returns the dimension URIs whose labels contain the specified query string.</p>
+<p><b>GET</b> <code>http://grlc.io/api/albertmeronyo/lsd-queries/dimensions?query={query-string}</code> </p>
+
+
+<p>Returns the code URIs of codelists linked to the specified dimension URI.</p>
+<p><b>GET</b> <code>http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim={url-encoded-uri}</code> </p>
+
+
+<h2>API Reference</h2>
+<p>See the API docs of the <a href="http://grlc.io">grlc</a>-generated OpenAPI specficiation <a href="http://grlc.io/api/albertmeronyo/lsd-queries/">here</a>.<p>
+
+<h2>Sources</h2>
+<p>The following sources are regularly integrated in LSD Dimensions for new dimensions and code lists:</p>
+
+<ul>
+  <li>Public SPARQL endpoints at <a href="http://datahub.io">Datahub.io</a></li>
+</ul>
+
+</div>
+
+
+<!--
+<table id="lsd-dimensions" style="width: 100%; white-space: nowrap; table-layout: fixed; text-align: left" data-toggle="table" data-url="data.json" data-sort-name="refs" data-sort-order="desc" data-pagination="true" data-search="true" data-classes="table table-hover table-condensed table-striped" data-page-size="10">
+  <thead>
+  <tr>
+    <th data-field="view" class="col-md-1"></th>
+    <th data-field="uri" data-sortable="true" class="ui-helper-center">Dimension URI</th>
+    <th data-field="label" data-sortable="true" class="ui-helper-center">Label</th>
+    <th data-field="refs" data-sortable="true" class="ui-helper-center col-md-2">References</th>
+  </tr>
+  </thead>
+</table> -->
+
+</div>
+
+{% include 'footer.html' %}
