@@ -11,3 +11,5 @@ lib/
 local/
 pip-selfcheck.json
 share/
+docker-compose.yml
+*.ttl
