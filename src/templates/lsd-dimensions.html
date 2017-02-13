@@ -13,7 +13,16 @@
     <input class="form-control" id="query" placeholder="Sex" value="Sex">
   </div>
   <div class="col-xs-2">
-    <button type="submit" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/dimensions?query='+document.getElementById('query').value;">Get dimensions</button>
+    <button type="submit" id="get_dimensions_button" class="btn btn-default">Get dimensions</button>
+  </div>
+</div>
+
+<div class="row" id="dimensions_results">
+  <div class="col-xs-1">
+    <strong>Dimensions</strong>
+  </div>
+  <div class="col-xs-9" id="dimensions_list">
+
   </div>
 </div>
 
@@ -27,7 +36,16 @@
     <input class="form-control" id="codes" placeholder="http://purl.org/linked-data/sdmx/2009/dimension#sex" value="http://purl.org/linked-data/sdmx/2009/dimension#sex">
   </div>
   <div class="col-xs-2">
-    <button type="submit" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim='+encodeURIComponent(document.getElementById('codes').value);">Get codes</button>
+    <button type="submit" id="get_codes_button" class="btn btn-default" onClick="window.location.href='http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim='+encodeURIComponent(document.getElementById('codes').value);">Get codes</button>
+  </div>
+</div>
+
+<div class="row" id="codes_results">
+  <div class="col-xs-1">
+    <strong>Codes</strong>
+  </div>
+  <div class="col-xs-9" id="codes_list">
+
   </div>
 </div>
 
