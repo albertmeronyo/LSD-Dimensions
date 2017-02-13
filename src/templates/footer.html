@@ -18,5 +18,123 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+  <script>
+    $('#dimensions_results').hide();
+
+    $('#get_dimensions_button').click(function(e){get_dimensions();})
+    $('#get_codes_button').click(function(e){
+      var dim_uri = $('#codes').val();
+
+      get_codes(dim_uri);
+    })
+
+    $('#query').keyup(function(e){
+      var code = e.which; // recommended to use e.which, it's normalized across browsers
+      if(code==13) {
+        e.preventDefault();
+        get_dimensions();
+      }
+    });
+
+    $('#codes').keyup(function(e){
+      var code = e.which; // recommended to use e.which, it's normalized across browsers
+      if(code==13) {
+        e.preventDefault();
+        var dim_uri = $('#codes').val();
+        get_codes(dim_uri);
+      }
+    });
+
+    function get_dimensions(){
+      console.log('Dimensions button clicked');
+
+      var url = 'http://grlc.io/api/albertmeronyo/lsd-queries/dimensions?query='+$('#query').val();
+
+      // $.getJSON(url, {query: $('#query').value}, function(data){
+      //   console.log(data);
+      // });
+
+      $.ajax(url, {
+        headers: {
+          Accept : "application/json"
+        },
+        // dataType: "json",
+        url: url,
+        // data: {query: $('#query').value},
+        success: function(data){
+          var dimensions = data.results.bindings;
+
+          if (dimensions.length>0){
+            $('#dimensions_results').show();
+          } else {
+            $('#dimensions_results').hide();
+            return;
+          }
+
+          $('#dimensions_list').empty();
+
+          var ul = $('<div class="list-group"></div>');
+
+          for(var i in dimensions){
+            var dimuri = dimensions[i]['dim']['value'];
+            var freq = dimensions[i]['freq']['value'];
+            console.log(dimuri);
+            var anchor = $('<a class="list-group-item" href="#" data-uri="'+dimuri+'">'+ dimuri + '<span class="badge">'+ freq +'</span></a>');
+            anchor.click(function(e){
+              var self = $(this);
+              console.log(self);
+              var clicked_uri = self[0].dataset['uri'];
+              $('#codes').val(clicked_uri);
+              console.log(clicked_uri);
+              get_codes(clicked_uri);
+            });
+            ul.append(anchor);
+          }
+
+          $('#dimensions_list').append(ul);
+        }
+      });
+    }
+
+
+    function get_codes(uri){
+      var encoded_uri = encodeURIComponent(uri);
+      var url = 'http://grlc.io/api/albertmeronyo/lsd-queries/codes?dim='+encoded_uri;
+
+      $.ajax(url, {
+        headers: {
+          Accept : "application/json"
+        },
+        // dataType: "json",
+        url: url,
+        // data: {query: $('#query').value},
+        success: function(data){
+          var codes = data.results.bindings;
+
+          if (codes.length>0){
+            $('#codes_results').show();
+          } else {
+            $('#codes_results').hide();
+            return;
+          }
+
+          $('#codes_list').empty();
+
+          var ul = $('<div class="list-group"></div>');
+
+          for(var i in codes){
+            var code_uri = codes[i]['code']['value'];
+            console.log(code_uri);
+            var anchor = $('<a class="list-group-item" href="#" data-uri="'+code_uri+'">'+ code_uri + '</a>');
+            ul.append(anchor);
+          }
+
+          $('#codes_list').append(ul);
+        }
+      })
+    }
+  </script>
   </body>
 </html>
